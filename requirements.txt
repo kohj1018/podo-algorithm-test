@@ -1,0 +1,14 @@
+pydantic>=2.5
+python-dotenv>=1.0
+rich>=13.0
+requests>=2.28
+beautifulsoup4>=4.12
+
+# LLM providers (install at least one; Anthropic is preferred when ANTHROPIC_API_KEY is set)
+anthropic>=0.40
+openai>=1.30
+
+# Optional. A pure-python Bradley-Terry is built in, so scipy is NOT required.
+# scipy>=1.10
+# Optional. Toss & Daangn are fetched via JSON APIs, so Playwright is NOT required.
+# playwright>=1.40
