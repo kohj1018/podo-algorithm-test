@@ -1,0 +1,2128 @@
+{
+  "_about": "UNLABELED golden-pair candidates auto-extracted from outputs/eval. A human must fill expected_winner (A_better|B_better|tie|unsure) and label_reason, then save as golden_pairs.json and run `eval-golden-pairs`.",
+  "_a_b_convention": "A = the job the default mode (domain_fit_bt) ranks HIGHER; A_better means you agree with the system, B_better means you would flip it.",
+  "_generated_from": "outputs\\eval",
+  "_stats": {
+    "per_persona": {
+      "ai_ml_application": 12,
+      "backend_platform": 10,
+      "devops_infra_security": 12,
+      "junior_frontend": 10
+    },
+    "per_category": {
+      "same_domain_close": 13,
+      "adjacent_vs_primary": 10,
+      "domain_transfer": 8,
+      "seniority_gap": 6,
+      "weak_vs_adjacent": 7
+    },
+    "total_candidates": 44,
+    "returned": 44,
+    "dropped": 0
+  },
+  "pairs": [
+    {
+      "pair_id": "prop-junior_frontend-01",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "daangn-6692173003",
+      "job_a_title": "Software Engineer, Frontend | 커머스",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.34/0.84)"
+      ],
+      "_hardness": 9,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.3367,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 3,
+            "winner": "B"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-02",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076141003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.68/1.05)"
+      ],
+      "_hardness": 9,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.6765,
+        "bt_b": 1.0454,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 2,
+            "winner": "B"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-01",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-7503655003",
+      "job_a_title": "AI Engineer (Brain, AIOC)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6308074003",
+      "job_b_title": "Data Analytics Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 1.27/0.82)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 7,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "data",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 3,
+        "bt_a": 1.2749,
+        "bt_b": 0.8151,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 2,
+            "winner": "B"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-01",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-6677722003",
+      "job_a_title": "Cloud Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 0.84/0.68)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 7,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 3,
+        "bt_a": 0.841,
+        "bt_b": 0.6765,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 1,
+            "winner": "B"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-02",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 2.10/0.68)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 7,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 3,
+        "bt_a": 2.1004,
+        "bt_b": 0.6765,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 1,
+            "winner": "B"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-03",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "daangn-6692173003",
+      "job_a_title": "Software Engineer, Frontend | 커머스",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076141003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.34/1.05)"
+      ],
+      "_hardness": 7,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.3367,
+        "bt_b": 1.0454,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 2,
+            "winner": "B"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-04",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.68/0.84)"
+      ],
+      "_hardness": 7,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.6765,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 3,
+            "winner": "B"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-03",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 1.05/0.68)"
+      ],
+      "_hardness": 6,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 3,
+        "bt_a": 1.0454,
+        "bt_b": 0.6765,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 1,
+            "winner": "B"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-05",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "daangn-6692173003",
+      "job_b_title": "Software Engineer, Frontend | 커머스",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "동일 회사(Daangn) 같은 직군 비교"
+      ],
+      "_hardness": 5,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 3,
+        "bt_a": 0.6765,
+        "bt_b": 0.3367,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-06",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "toss-4076141003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "동일 회사(Toss) 같은 직군 비교"
+      ],
+      "_hardness": 5,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 1.0454,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-02",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "daangn-7507320003",
+      "job_a_title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬"
+      ],
+      "_hardness": 4,
+      "_system_view": {
+        "role_family_a": "data",
+        "role_family_b": "devops_infra",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 0.3213,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 4,
+            "winner": "B"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": true
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-01",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "daangn-6640363003",
+      "job_a_title": "Software Engineer, Backend | 광고",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(backend) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 4,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 3,
+        "bt_a": 1.2749,
+        "bt_b": 0.8151,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-04",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6677722003",
+      "job_b_title": "Cloud Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(devops_infra) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 4,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 1.0454,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-05",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-5004587003",
+      "job_b_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(devops_infra) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 4,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 2.1004,
+        "bt_b": 1.0454,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 3,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-03",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6545457003",
+      "job_a_title": "AI Engineer (Commerce)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6308074003",
+      "job_b_title": "Data Analytics Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit3) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 3,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "data",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 3,
+        "fit_b": 3,
+        "bt_a": 2.0676,
+        "bt_b": 0.8151,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-02",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-6640363003",
+      "job_b_title": "Software Engineer, Backend | 광고",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 role_family(backend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 3,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 4,
+        "fit_b": 3,
+        "bt_a": 2.0676,
+        "bt_b": 1.2749,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-03",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-5004587003",
+      "job_b_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 role_family(devops_infra) · 같은 도메인 tier(adjacent) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 3,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "devops_infra",
+        "domain_a": "adjacent",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 0.5211,
+        "bt_b": 0.3213,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-06",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6677722003",
+      "job_b_title": "Cloud Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "hard",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(devops_infra) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "동일 회사(Toss) 같은 직군 비교"
+      ],
+      "_hardness": 3,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 2.1004,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-04",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "daangn-7507320003",
+      "job_a_title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+      "job_a_company": "Daangn",
+      "job_b_id": "daangn-7655325003",
+      "job_b_title": "Security Engineer | 인프라 (보안, AI Security)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "동일 회사(Daangn) 유사/인접 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "data",
+        "role_family_b": "security",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 0.3213,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-05",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6308074003",
+      "job_a_title": "Data Analytics Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "data",
+        "role_family_b": "devops_infra",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.8151,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-06",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6545457003",
+      "job_a_title": "AI Engineer (Commerce)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(ml_ai) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "동일 회사(Toss) 같은 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 2.0676,
+        "bt_b": 1.2749,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-07",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-7503655003",
+      "job_a_title": "AI Engineer (Brain, AIOC)",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-7507320003",
+      "job_b_title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit2) — 주력 도메인이 그래도 위여야 하나?"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "data",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 1.2749,
+        "bt_b": 0.3213,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-08",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-7655325003",
+      "job_b_title": "Security Engineer | 인프라 (보안, AI Security)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "security",
+        "domain_a": "weak",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 0.5211,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-04",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(backend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "동일 회사(Toss) 같은 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "backend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 4,
+        "fit_b": 3,
+        "bt_a": 2.0676,
+        "bt_b": 0.8151,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-05",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "ml_ai",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 0.5211,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-07",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-6600650003",
+      "job_a_title": "ML Backend Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-6045408003",
+      "job_b_title": "Security Engineer | 인프라 (보안, 모의해킹)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "security",
+        "domain_a": "adjacent",
+        "domain_b": "adjacent",
+        "fit_a": 3,
+        "fit_b": 1,
+        "bt_a": 0.6765,
+        "bt_b": 0.3367,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-08",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-6600650003",
+      "job_a_title": "ML Backend Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "ml_ai",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 3,
+        "fit_b": 1,
+        "bt_a": 0.6765,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-07",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "toss-5311744003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-7689088003",
+      "job_b_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 5,
+        "fit_b": 3,
+        "bt_a": 2.1004,
+        "bt_b": 0.6765,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 2,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-08",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "toss-5311744003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "medium",
+      "category": "seniority_gap",
+      "_proposed_reasons": [
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "_hardness": 2,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "frontend",
+        "domain_a": "strong",
+        "domain_b": "strong",
+        "fit_a": 5,
+        "fit_b": 2,
+        "bt_a": 2.1004,
+        "bt_b": 0.841,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 3,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-09",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6308074003",
+      "job_a_title": "Data Analytics Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-7507320003",
+      "job_b_title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "same_domain_close",
+      "_proposed_reasons": [
+        "같은 role_family(data) · 같은 도메인 tier(adjacent) · 근접 fit(Δ1)"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "data",
+        "role_family_b": "data",
+        "domain_a": "adjacent",
+        "domain_b": "adjacent",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.8151,
+        "bt_b": 0.3213,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-10",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6308074003",
+      "job_a_title": "Data Analytics Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "daangn-7655325003",
+      "job_b_title": "Security Engineer | 인프라 (보안, AI Security)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "data",
+        "role_family_b": "security",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.8151,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-11",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-6545457003",
+      "job_a_title": "AI Engineer (Commerce)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 2.0676,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-ai_ml_application-12",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "job_a_id": "toss-7503655003",
+      "job_a_title": "AI Engineer (Brain, AIOC)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "ml_ai",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 2,
+        "bt_a": 1.2749,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-06",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "ml_ai",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 1,
+        "fit_b": 1,
+        "bt_a": 0.3213,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-07",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "daangn-6640363003",
+      "job_a_title": "Software Engineer, Backend | 광고",
+      "job_a_company": "Daangn",
+      "job_b_id": "daangn-5004587003",
+      "job_b_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "동일 회사(Daangn) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 3,
+        "fit_b": 1,
+        "bt_a": 1.2749,
+        "bt_b": 0.3213,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-08",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6600650003",
+      "job_a_title": "ML Backend Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 3,
+        "fit_b": 1,
+        "bt_a": 0.8151,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-09",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6600650003",
+      "job_a_title": "ML Backend Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 3,
+        "fit_b": 2,
+        "bt_a": 0.8151,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-backend_platform-10",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "backend",
+        "role_family_b": "devops_infra",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 4,
+        "fit_b": 2,
+        "bt_a": 2.0676,
+        "bt_b": 0.5211,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 4,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-09",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "daangn-6045408003",
+      "job_b_title": "Security Engineer | 인프라 (보안, 모의해킹)",
+      "job_b_company": "Daangn",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "adjacent_vs_primary",
+      "_proposed_reasons": [
+        "동일 회사(Daangn) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "security",
+        "domain_a": "strong",
+        "domain_b": "adjacent",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 1.0454,
+        "bt_b": 0.3367,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 3,
+            "b": 5,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 2,
+            "b": 5,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-10",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "daangn-6045408003",
+      "job_a_title": "Security Engineer | 인프라 (보안, 모의해킹)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "weak_vs_adjacent",
+      "_proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "security",
+        "role_family_b": "ml_ai",
+        "domain_a": "adjacent",
+        "domain_b": "weak",
+        "fit_a": 1,
+        "fit_b": 1,
+        "bt_a": 0.3367,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-11",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-6677722003",
+      "job_a_title": "Cloud Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 0.841,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-devops_infra_security-12",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "devops_infra",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 2.1004,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 1,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 2,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 1,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-09",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "toss-4076130003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 0.841,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 3,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 5,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    },
+    {
+      "pair_id": "prop-junior_frontend-10",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "job_a_id": "toss-4076141003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "",
+      "label_reason": "",
+      "difficulty": "easy",
+      "category": "domain_transfer",
+      "_proposed_reasons": [
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "_hardness": 1,
+      "_system_view": {
+        "role_family_a": "frontend",
+        "role_family_b": "ml_ai",
+        "domain_a": "strong",
+        "domain_b": "weak",
+        "fit_a": 2,
+        "fit_b": 1,
+        "bt_a": 1.0454,
+        "bt_b": 0.0,
+        "rank_by_mode": {
+          "bt_primary": {
+            "a": 2,
+            "b": 6,
+            "winner": "A"
+          },
+          "fit_primary": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          },
+          "domain_fit_bt": {
+            "a": 4,
+            "b": 6,
+            "winner": "A"
+          }
+        },
+        "modes_disagree": false
+      }
+    }
+  ]
+}

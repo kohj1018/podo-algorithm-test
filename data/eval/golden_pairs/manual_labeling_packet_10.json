@@ -1,0 +1,687 @@
+{
+  "_about": "Manual-labeling packet. Fill expected_winner (A_better|B_better|tie|unsure), label_reason, and confidence (high|medium|low) for each pair. The system did NOT label these. A = the job the default mode (domain_fit_bt) ranks higher. The top-level job_*_id/title/company are the fields eval-golden-pairs reads; the nested job_a/job_b objects are extra context for the human and are ignored by it.",
+  "_how_to_use": "Edit this JSON in place (fill the 3 blank fields per pair), then run: python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/manual_labeling_packet_10.json  (or copy the labeled pairs into data/eval/golden_pairs/golden_pairs.json).",
+  "_counts": {
+    "n": 10,
+    "by_persona": {
+      "junior_frontend": 4,
+      "devops_infra_security": 3,
+      "ai_ml_application": 2,
+      "backend_platform": 1
+    },
+    "by_category": {
+      "same_domain_close": 5,
+      "adjacent_vs_primary": 4,
+      "domain_transfer": 1
+    },
+    "by_difficulty": {
+      "hard": 10
+    },
+    "modes_disagree": 9
+  },
+  "pairs": [
+    {
+      "pair_id": "prop-junior_frontend-01",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "category": "same_domain_close",
+      "difficulty": "hard",
+      "hardness": 9,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · 같은 도메인에서 **경력연차(experience_level) 결손**이 순위를 가르는 것이 타당한지 · 같은 직군·티어의 **근소한 fit 차이**가 올바른 순서인지",
+      "proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.34/0.84)"
+      ],
+      "job_a_id": "daangn-6692173003",
+      "job_a_title": "Software Engineer, Frontend | 커머스",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-6692173003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커머스",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 0.3367,
+        "rank_bt_primary": 5,
+        "rank_fit_primary": 3,
+        "rank_domain_fit_bt": 3,
+        "cap_reason": "role-defining critical gap; role-defining required gap",
+        "matched": [
+          "TypeScript, React를 활용한 개발 경험이 있으신 분",
+          "복잡한 상태 관리(Recoil, Zustand 등)를 다뤄보신 분"
+        ],
+        "gaps": [
+          "[critical/technical/weak] 프론트엔드 기반 서비스 또는 프로젝트를 주도적으로 개발하고 운영한 경험이 있으신 분",
+          "[required/technical/missing] AI 도구(Claude Code, Cursor 등)를 적극 활용해 생산성을 높이고 비즈니스 임팩트에 집중하시는 분"
+        ],
+        "system_reason": "TypeScript/React와 복잡한 상태 관리 경험은 강하게 맞지만, 프론트엔드 서비스를 주도적으로 개발·운영한 prerequisite가 약하고 운영 오너십 증거도 제한적입니다. 핵심 기술은 맞지만 prerequisite gap과 운영 경험 부족이 더 큽니다."
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 0.841,
+        "rank_bt_primary": 3,
+        "rank_fit_primary": 5,
+        "rank_domain_fit_bt": 5,
+        "cap_reason": "role-defining required gaps x2",
+        "matched": [
+          "React, TypeScript 기반으로 안정적인 서비스를 개발할 수 있는 분"
+        ],
+        "gaps": [
+          "[required/experience_level/missing] 레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+          "[required/technical/missing] 기존 소스 코드를 새로운 코드 베이스로 점진적으로 이관한 경험"
+        ],
+        "system_reason": "React/TypeScript 기반 안정적 서비스 개발 역량이 직접 매칭되며 도메인 적합성도 높습니다. 그러나 레거시 개선과 점진적 이관 경험이라는 핵심 prerequisite gap이 있어 상위 두 개보다 FIT이 약합니다."
+      },
+      "expected_winner": "B_better",
+      "label_reason": "둘 다 frontend strong이지만 주니어 기준 B(토스 인슈어런스)의 핵심 요건은 'React/TS로 안정적 서비스 개발'이라 그녀의 수준과 직접 일치하고 함께할 사수(FE 1명)도 있음. A(당근 커머스)는 '주도적 개발·운영 오너십'과 AI도구 활용을 필수로 요구해 운영 오너십 없는 주니어에겐 문턱이 더 높음. B의 레거시/이관 항목은 원문상 '있으면 좋아요' 수준.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-junior_frontend-02",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "category": "same_domain_close",
+      "difficulty": "hard",
+      "hardness": 9,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · 같은 도메인에서 **경력연차(experience_level) 결손**이 순위를 가르는 것이 타당한지 · 같은 직군·티어의 **근소한 fit 차이**가 올바른 순서인지",
+      "proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.68/1.05)"
+      ],
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076141003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-7689088003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 0.6765,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 2,
+        "rank_domain_fit_bt": 2,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "JavaScript, TypeScript에 이해가 깊으신 분"
+        ],
+        "gaps": [
+          "[critical/experience_level/weak] 개발 경험 3년 이상 또는 이에 준하는 실력을 가지고 계신 분"
+        ],
+        "system_reason": "JavaScript/TypeScript 이해가 깊다는 직접 매칭이 있고 frontend 도메인도 일치합니다. 하지만 3년 이상 수준의 경험이 약하게만 충족되며, 모바일 웹뷰와 A/B 테스트 같은 선호 요소는 부족합니다."
+      },
+      "job_b": {
+        "job_id": "toss-4076141003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 1.0454,
+        "rank_bt_primary": 2,
+        "rank_fit_primary": 4,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gaps x3",
+        "matched": [
+          "React",
+          "Next.js"
+        ],
+        "gaps": [
+          "[critical/technical/missing] 웹 기반의 서비스를 운영한 경험이 있으신 분",
+          "[critical/technical/missing] 웹소켓, SSE"
+        ],
+        "system_reason": "Frontend 도메인과 직접 일치하고 React, Next.js, TypeScript 등 핵심 스택 매칭이 매우 강합니다. 다만 웹 기반 서비스 운영, 웹소켓/SSE, GitHub Action 같은 핵심 prerequisite gap이 있어 1위보다는 아래입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "둘 다 frontend strong. A(당근 모임)는 React SSR·깊은 JS/TS를 요구하는데 그녀의 Next.js/SSR·TS 역량과 직접 맞고 갭은 '3년+' 연차('이에 준하는 실력'으로 완화)뿐. B(토스 증권)는 웹 서비스 운영 경험+웹소켓/SSE+실시간(1400TPS) 성능 최적화 등 구체적 기술 결손이 많고 더 전문화된 역할이라 주니어에겐 A가 더 적합.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-devops_infra_security-01",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "category": "adjacent_vs_primary",
+      "difficulty": "hard",
+      "hardness": 7,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · **주력(strong) 도메인이 인접(adjacent) 도메인보다 fit이 낮음** → 도메인 우선 원칙이 옳은지 검증",
+      "proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 0.84/0.68)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "job_a_id": "toss-6677722003",
+      "job_a_title": "Cloud Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "toss-6677722003",
+        "company": "Toss",
+        "title": "Cloud Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 0.841,
+        "rank_bt_primary": 3,
+        "rank_fit_primary": 4,
+        "rank_domain_fit_bt": 3,
+        "cap_reason": "role-defining critical gaps x3; role-defining required gap",
+        "matched": [
+          "Kubernetes를 이용한 서비스 운영 및 배포 경험",
+          "새로운 기술을 배우고, 이를 운영 환경에 적극적으로 적용하는 데 열정적인 분"
+        ],
+        "gaps": [
+          "[critical/technical/missing] Python, Golang, C 중 최소 1개 이상의 숙련된 언어 사용",
+          "[critical/technical/missing] Rest API와 Database 트랜잭션에 대한 이해"
+        ],
+        "system_reason": "주력 도메인과 직접 일치하며 Kubernetes 운영/배포 경험과 인프라 기술 적응성이 확인됩니다. 하지만 숙련 언어, REST API/DB 트랜잭션, OpenStack 핵심 컴포넌트 경험이 빠져 있어 핵심 prerequisite 충족도가 낮습니다."
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "adjacent",
+        "fit_level": 3,
+        "bt_score": 0.6765,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 1,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "쿠버네티스 환경 위에서 서버를 배포하고 모니터링하며 안정적으로 운영한 경험이 있으면 좋아요."
+        ],
+        "gaps": [
+          "[critical/technical/weak] Python, Kotlin, Go 등 하나 이상의 언어로 서버를 개발하고 운영해 본 경험이 필요해요."
+        ],
+        "system_reason": "Kubernetes 기반 서버 운영 경험은 맞지만 role_family가 adjacent이고, 핵심 prerequisite인 서버 개발·운영 언어 역량이 직접적으로 강하게 확인되지는 않습니다. 도메인 적합성은 있으나 핵심 요구 충족이 제한적입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "페르소나 primary domain이 infra/cloud라 도메인 우선 원칙(infra>backend)상 A(Cloud Engineer)가 B(ML Backend, adjacent·서버 앱 개발 핵심)보다 맞는 방향. 다만 A는 K8s·OS/네트워크/스토리지는 매칭되나 OpenStack(Nova/Neutron/Cinder/Keystone) 미보유·숙련 언어·REST/DB 트랜잭션 약함 등 핵심 갭이 커서, 같은 페르소나의 AIOps만큼 강한 일치는 아님 → 방향은 A이되 medium.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-devops_infra_security-02",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "category": "adjacent_vs_primary",
+      "difficulty": "hard",
+      "hardness": 7,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · **주력(strong) 도메인이 인접(adjacent) 도메인보다 fit이 낮음** → 도메인 우선 원칙이 옳은지 검증",
+      "proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 2.10/0.68)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "toss-7702581003",
+        "company": "Toss",
+        "title": "AIOps Platform Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 2.1004,
+        "rank_bt_primary": 1,
+        "rank_fit_primary": 2,
+        "rank_domain_fit_bt": 1,
+        "cap_reason": "role-defining critical gaps x3",
+        "matched": [
+          "주력 개발 언어 1개 이상",
+          "Linux 시스템 관리 역량"
+        ],
+        "gaps": [
+          "[critical/technical/missing] End-to-End 데이터 파이프라인 구축 경험",
+          "[critical/technical/missing] 시계열 DB 활용 경험"
+        ],
+        "system_reason": "주력 도메인과 직접 일치하는 strong 정렬이고, Linux/인프라 개념/AIOps·모니터링/온콜 경험 등 핵심 직접 매칭이 여러 개 확인됩니다. 다만 데이터 파이프라인, 시계열 DB, 영문 기술문서가 핵심 갭이라 상위권이지만 완전한 적합은 아닙니다."
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "adjacent",
+        "fit_level": 3,
+        "bt_score": 0.6765,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 1,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "쿠버네티스 환경 위에서 서버를 배포하고 모니터링하며 안정적으로 운영한 경험이 있으면 좋아요."
+        ],
+        "gaps": [
+          "[critical/technical/weak] Python, Kotlin, Go 등 하나 이상의 언어로 서버를 개발하고 운영해 본 경험이 필요해요."
+        ],
+        "system_reason": "Kubernetes 기반 서버 운영 경험은 맞지만 role_family가 adjacent이고, 핵심 prerequisite인 서버 개발·운영 언어 역량이 직접적으로 강하게 확인되지는 않습니다. 도메인 적합성은 있으나 핵심 요구 충족이 제한적입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "A(AIOps Platform)는 그의 주력 도메인(인프라/관측성)이고 Prometheus/Grafana/Loki 기반 모니터링·로그/메트릭·Linux·온콜 경험이 핵심 요건과 강하게 일치. B(ML Backend)는 adjacent이며 서버 앱 개발·아키텍처가 핵심이라 그의 프로필과 멀어 명확히 A.",
+      "confidence": "high"
+    },
+    {
+      "pair_id": "prop-ai_ml_application-01",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "category": "adjacent_vs_primary",
+      "difficulty": "hard",
+      "hardness": 7,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · **주력(strong) 도메인이 인접(adjacent) 도메인보다 fit이 낮음** → 도메인 우선 원칙이 옳은지 검증",
+      "proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 1.27/0.82)",
+        "동일 회사(Toss) 유사/인접 직군 비교"
+      ],
+      "job_a_id": "toss-7503655003",
+      "job_a_title": "AI Engineer (Brain, AIOC)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6308074003",
+      "job_b_title": "Data Analytics Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "toss-7503655003",
+        "company": "Toss",
+        "title": "AI Engineer (Brain, AIOC)",
+        "role_family": "ml_ai",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 1.2749,
+        "rank_bt_primary": 2,
+        "rank_fit_primary": 3,
+        "rank_domain_fit_bt": 2,
+        "cap_reason": "role-defining critical gaps x2",
+        "matched": [
+          "데이터셋/지표/가드레일을 기반으로 품질을 체계적으로 끌어올릴 수 있는 능력",
+          "Multi-Agent, LLM, RAG, 멀티모달 모델 등 최신 AI 기술을 활용해 복잡한 비즈니스 문제를 해결한 경험"
+        ],
+        "gaps": [
+          "[critical/technical/missing] 불확실성을 정량화하는 데 능숙한 역량",
+          "[critical/technical/missing] 다양한 모달의 데이터(텍스트, 이미지, 구조화 데이터)를 통합적으로 활용해 모델을 설계하고 실험해 본 경험"
+        ],
+        "system_reason": "ML/AI 도메인 정합성은 매우 강하고, 품질 개선 체계와 최신 AI 기술 활용 경험도 잘 맞습니다. 다만 불확실성 정량화와 멀티모달 통합 경험이 핵심 갭으로 남아 있어 같은 계열의 다른 Toss AI 역할보다 한 단계 아래입니다."
+      },
+      "job_b": {
+        "job_id": "toss-6308074003",
+        "company": "Toss",
+        "title": "Data Analytics Engineer",
+        "role_family": "data",
+        "domain_alignment": "adjacent",
+        "fit_level": 3,
+        "bt_score": 0.8151,
+        "rank_bt_primary": 3,
+        "rank_fit_primary": 2,
+        "rank_domain_fit_bt": 3,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "SQL(상)",
+          "Python(중) 정도의 기술 역량"
+        ],
+        "gaps": [
+          "[critical/technical/missing] 데이터마트를 주도적으로 설계, 구축하고 운영한 경험"
+        ],
+        "system_reason": "SQL과 Python 역량은 직접 맞지만, 데이터마트를 주도적으로 설계·구축·운영한 핵심 전제는 충족되지 않습니다. 인접 도메인이고 핵심 prerequisite 갭이 있어 상위 AI 역할들보다 확실히 뒤입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "A(AI Engineer)는 그의 primary domain. RAG·LLM·에이전트(Tool Calling)·정량 평가/가드레일·프로덕션 AI 반복 개선이 그의 핵심 강점과 직접 일치하고 JD도 '프로덕션 AI 서비스 경험이면 충분'이라 멀티모달/불확실성 갭을 완화. B(Data Analytics)는 adjacent이고 데이터마트/DW 설계가 핵심이라 그와 멀음.",
+      "confidence": "high"
+    },
+    {
+      "pair_id": "prop-junior_frontend-03",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "category": "same_domain_close",
+      "difficulty": "hard",
+      "hardness": 7,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · 같은 직군·티어의 **근소한 fit 차이**가 올바른 순서인지",
+      "proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.34/1.05)"
+      ],
+      "job_a_id": "daangn-6692173003",
+      "job_a_title": "Software Engineer, Frontend | 커머스",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076141003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-6692173003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커머스",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 0.3367,
+        "rank_bt_primary": 5,
+        "rank_fit_primary": 3,
+        "rank_domain_fit_bt": 3,
+        "cap_reason": "role-defining critical gap; role-defining required gap",
+        "matched": [
+          "TypeScript, React를 활용한 개발 경험이 있으신 분",
+          "복잡한 상태 관리(Recoil, Zustand 등)를 다뤄보신 분"
+        ],
+        "gaps": [
+          "[critical/technical/weak] 프론트엔드 기반 서비스 또는 프로젝트를 주도적으로 개발하고 운영한 경험이 있으신 분",
+          "[required/technical/missing] AI 도구(Claude Code, Cursor 등)를 적극 활용해 생산성을 높이고 비즈니스 임팩트에 집중하시는 분"
+        ],
+        "system_reason": "TypeScript/React와 복잡한 상태 관리 경험은 강하게 맞지만, 프론트엔드 서비스를 주도적으로 개발·운영한 prerequisite가 약하고 운영 오너십 증거도 제한적입니다. 핵심 기술은 맞지만 prerequisite gap과 운영 경험 부족이 더 큽니다."
+      },
+      "job_b": {
+        "job_id": "toss-4076141003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 1.0454,
+        "rank_bt_primary": 2,
+        "rank_fit_primary": 4,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gaps x3",
+        "matched": [
+          "React",
+          "Next.js"
+        ],
+        "gaps": [
+          "[critical/technical/missing] 웹 기반의 서비스를 운영한 경험이 있으신 분",
+          "[critical/technical/missing] 웹소켓, SSE"
+        ],
+        "system_reason": "Frontend 도메인과 직접 일치하고 React, Next.js, TypeScript 등 핵심 스택 매칭이 매우 강합니다. 다만 웹 기반 서비스 운영, 웹소켓/SSE, GitHub Action 같은 핵심 prerequisite gap이 있어 1위보다는 아래입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "둘 다 frontend strong. A(당근 커머스)도 주도적 개발·운영 오너십·AI도구 활용이라는 갭은 있으나 그녀의 React/TS/복잡한 상태관리(Zustand) 스택과 직접 일치. B(토스 증권)는 웹 서비스 운영+웹소켓/SSE+실시간 1400TPS 성능 최적화 등 전문화된 기술 결손이 더 큼. A가 좋아서가 아니라 B의 실시간·운영 전문 갭이 더 커서, 주니어에겐 갭이 더 작은 A가 적합.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-junior_frontend-04",
+      "persona": "junior_frontend",
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "category": "same_domain_close",
+      "difficulty": "hard",
+      "hardness": 7,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · 같은 직군·티어의 **근소한 fit 차이**가 올바른 순서인지",
+      "proposed_reasons": [
+        "같은 role_family(frontend) · 같은 도메인 tier(strong) · 근접 fit(Δ1)",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 3/2, BT 0.68/0.84)"
+      ],
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-7689088003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 0.6765,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 2,
+        "rank_domain_fit_bt": 2,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "JavaScript, TypeScript에 이해가 깊으신 분"
+        ],
+        "gaps": [
+          "[critical/experience_level/weak] 개발 경험 3년 이상 또는 이에 준하는 실력을 가지고 계신 분"
+        ],
+        "system_reason": "JavaScript/TypeScript 이해가 깊다는 직접 매칭이 있고 frontend 도메인도 일치합니다. 하지만 3년 이상 수준의 경험이 약하게만 충족되며, 모바일 웹뷰와 A/B 테스트 같은 선호 요소는 부족합니다."
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 0.841,
+        "rank_bt_primary": 3,
+        "rank_fit_primary": 5,
+        "rank_domain_fit_bt": 5,
+        "cap_reason": "role-defining required gaps x2",
+        "matched": [
+          "React, TypeScript 기반으로 안정적인 서비스를 개발할 수 있는 분"
+        ],
+        "gaps": [
+          "[required/experience_level/missing] 레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+          "[required/technical/missing] 기존 소스 코드를 새로운 코드 베이스로 점진적으로 이관한 경험"
+        ],
+        "system_reason": "React/TypeScript 기반 안정적 서비스 개발 역량이 직접 매칭되며 도메인 적합성도 높습니다. 그러나 레거시 개선과 점진적 이관 경험이라는 핵심 prerequisite gap이 있어 상위 두 개보다 FIT이 약합니다."
+      },
+      "expected_winner": "B_better",
+      "label_reason": "둘 다 frontend strong. A(당근 모임)는 '개발 3년 이상'을 명시 요구해 6개월 인턴 경력 주니어와 연차 갭이 큼. B(토스 인슈어런스)는 연차 바 없이 'React/TS 안정적 서비스 개발'이 핵심이라 그녀 수준과 맞고 사수도 있음. 연차 갭이 작은 B가 더 적합.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-devops_infra_security-03",
+      "persona": "devops_infra_security",
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "category": "adjacent_vs_primary",
+      "difficulty": "hard",
+      "hardness": 6,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · headline **fit과 BT(pairwise) 순서가 불일치** → fit 우선 vs 비교 우선 중 무엇이 맞는지 검증 · **주력(strong) 도메인이 인접(adjacent) 도메인보다 fit이 낮음** → 도메인 우선 원칙이 옳은지 검증",
+      "proposed_reasons": [
+        "주력(strong, fit2) vs 인접(adjacent, fit3) — 주력 도메인이 그래도 위여야 하나?",
+        "headline fit 과 Bradley-Terry 순서가 불일치 (fit 2/3, BT 1.05/0.68)"
+      ],
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-5004587003",
+        "company": "Daangn",
+        "title": "Network Engineer | 인프라 (네트워크, Cloud)",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "fit_level": 2,
+        "bt_score": 1.0454,
+        "rank_bt_primary": 2,
+        "rank_fit_primary": 3,
+        "rank_domain_fit_bt": 2,
+        "cap_reason": "role-defining critical gaps x5",
+        "matched": [
+          "Kubernetes 환경에 대한 이해가 깊으신 분",
+          "네트워크 모니터링 플랫폼 개발이나 자동화에 관심이 많으신 분(Go, Python 등)"
+        ],
+        "gaps": [
+          "[critical/experience_level/missing] Network Engineering 실무 경험이 5년 이상이신 분",
+          "[critical/technical/weak] OSPF, BGP 등 Dynamic Routing Protocol에 대한 이해와 운영 경험이 있으신 분"
+        ],
+        "system_reason": "주력 도메인과 직접 일치하고 Kubernetes, 네트워크 모니터링 자동화, IaC는 강하게 맞습니다. 그러나 5년 이상 실무, 라우팅 프로토콜, 고급 클라우드 네트워크, 패킷 분석이 핵심 갭/미충족이라 Toss AIOps보다 아래입니다."
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "adjacent",
+        "fit_level": 3,
+        "bt_score": 0.6765,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 1,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "쿠버네티스 환경 위에서 서버를 배포하고 모니터링하며 안정적으로 운영한 경험이 있으면 좋아요."
+        ],
+        "gaps": [
+          "[critical/technical/weak] Python, Kotlin, Go 등 하나 이상의 언어로 서버를 개발하고 운영해 본 경험이 필요해요."
+        ],
+        "system_reason": "Kubernetes 기반 서버 운영 경험은 맞지만 role_family가 adjacent이고, 핵심 prerequisite인 서버 개발·운영 언어 역량이 직접적으로 강하게 확인되지는 않습니다. 도메인 적합성은 있으나 핵심 요구 충족이 제한적입니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "페르소나 primary domain이 infra. A(Network Engineer)는 infra 도메인이고 그의 AWS 클라우드 네트워크·K8s·Terraform IaC·모니터링 자동화가 전이 가능(단 OSPF/BGP·5년 네트워크·패킷분석은 갭). B(ML Backend)는 adjacent이며 서버 앱 개발이 핵심이라 그와 어긋남. 도메인 우선·전이성으로 A, 네트워크 전문 요건 결손으로 medium.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-ai_ml_application-02",
+      "persona": "ai_ml_application",
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "category": "domain_transfer",
+      "difficulty": "hard",
+      "hardness": 4,
+      "modes_disagree": true,
+      "why_useful": "두 랭킹 모드(domain_fit_bt vs bt_primary)가 이 쌍을 **반대로** 정렬 → 라벨이 어느 정렬을 지지하는지 가름 · 서로 다른 엔지니어링 직군 간 비교(도메인 전이)",
+      "proposed_reasons": [
+        "weak 도메인 vs 인접(adjacent) 도메인 — 도메인 거리 판단",
+        "domain_fit_bt 와 bt_primary 가 이 쌍을 서로 반대로 정렬"
+      ],
+      "job_a_id": "daangn-7507320003",
+      "job_a_title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-7507320003",
+        "company": "Daangn",
+        "title": "Data Analytics Engineer | 테크코어 (데이터 가치화)",
+        "role_family": "data",
+        "domain_alignment": "adjacent",
+        "fit_level": 2,
+        "bt_score": 0.3213,
+        "rank_bt_primary": 5,
+        "rank_fit_primary": 4,
+        "rank_domain_fit_bt": 4,
+        "cap_reason": "role-defining critical gaps x2",
+        "matched": [
+          "SQL, Python을 활용해 데이터를 분석하고 처리할 수 있으신 분"
+        ],
+        "gaps": [
+          "[critical/technical/missing] 데이터 모델링/ETL/데이터 마트 구축 경험이 있으신 분",
+          "[critical/technical/missing] 단일 모델 수준이 아닌, 데이터 파이프라인 전반의 데이터 품질 관리, 정합성 검증 경험이 있으신 분"
+        ],
+        "system_reason": "SQL/Python 기반 데이터 처리 역량은 맞지만, 데이터 모델링·ETL·데이터마트·품질관리 같은 핵심 요구가 여러 개 비어 있습니다. 협업 요구까지 포함해 prerequisite 갭이 커서 Toss 데이터 역할보다도 약합니다."
+      },
+      "job_b": {
+        "job_id": "toss-7702581003",
+        "company": "Toss",
+        "title": "AIOps Platform Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "weak",
+        "fit_level": 2,
+        "bt_score": 0.5211,
+        "rank_bt_primary": 4,
+        "rank_fit_primary": 5,
+        "rank_domain_fit_bt": 5,
+        "cap_reason": "role-defining critical gaps x4",
+        "matched": [
+          "주력 개발 언어 1개 이상",
+          "검색 엔진 활용 경험"
+        ],
+        "gaps": [
+          "[critical/experience_level/missing] 데이터 파이프라인/플랫폼 엔지니어링/SRE/인프라 엔지니어링 경력 3년 이상",
+          "[critical/technical/weak] 대규모 메트릭·로그 처리 경험"
+        ],
+        "system_reason": "주력 언어, 검색 엔진 활용, 영문 기술 문서 적용, 프롬프트 엔지니어링은 맞지만, 3년 이상 플랫폼/SRE 경력과 Linux, 대규모 운영 경험이 핵심 갭입니다. 약한 도메인 정합성에 비해 필수 인프라 prerequisite 부족이 큽니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "둘 다 그의 주력(AI/ML 앱)이 아님. A(Data Analytics, adjacent)는 SQL/Python·데이터 처리/랭킹 경험이 전이되고 본인도 '데이터 엔지니어'를 인접 관심으로 명시. B(AIOps, weak)는 핵심이 3년+ SRE/인프라·Linux·대규모 메트릭/로그라 그가 갖추지 못함(겹치는 건 LLM/프롬프트 같은 '더 좋아요'뿐). 도메인이 더 가까운 A.",
+      "confidence": "medium"
+    },
+    {
+      "pair_id": "prop-backend_platform-01",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "category": "same_domain_close",
+      "difficulty": "hard",
+      "hardness": 4,
+      "modes_disagree": false,
+      "why_useful": "같은 도메인에서 **경력연차(experience_level) 결손**이 순위를 가르는 것이 타당한지 · 같은 직군·티어의 **근소한 fit 차이**가 올바른 순서인지",
+      "proposed_reasons": [
+        "같은 role_family(backend) · 같은 도메인 tier(strong) · 근접 fit(Δ0)",
+        "같은 도메인 tier인데 한쪽만 경력연차(experience_level) prerequisite 결손"
+      ],
+      "job_a_id": "daangn-6640363003",
+      "job_a_title": "Software Engineer, Backend | 광고",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "job_a": {
+        "job_id": "daangn-6640363003",
+        "company": "Daangn",
+        "title": "Software Engineer, Backend | 광고",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 1.2749,
+        "rank_bt_primary": 2,
+        "rank_fit_primary": 2,
+        "rank_domain_fit_bt": 2,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "하나 이상의 프로그래밍 언어에 능숙하신 분",
+          "스스로 데이터베이스를 설계하고 개발/운영해 본 경험이 있으신 분"
+        ],
+        "gaps": [
+          "[critical/experience_level/weak] 5년 이상의 서버 개발 경험, 혹은 이에 준하는 역량을 보유하신 분"
+        ],
+        "system_reason": "백엔드 도메인 정합성이 높고, 언어 숙련·DB 설계/운영·마이크로서비스/REST/gRPC·클라우드 운영이 직접 맞습니다. 다만 5년 이상 서버 개발 경력이라는 핵심 prerequisite가 약하게만 남아 있어 1위보다는 아래입니다."
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "fit_level": 3,
+        "bt_score": 0.8151,
+        "rank_bt_primary": 3,
+        "rank_fit_primary": 3,
+        "rank_domain_fit_bt": 3,
+        "cap_reason": "role-defining critical gap",
+        "matched": [
+          "Python, Kotlin, Go 등 하나 이상의 언어로 서버를 개발하고 운영해 본 경험이 필요해요.",
+          "크고 복잡한 문제를 소프트웨어 기술로 해결하거나, 혹은 서비스나 제품으로 비즈니스 임팩트를 낸 경험이 있으면 좋아요."
+        ],
+        "gaps": [
+          "[critical/technical/weak] 견고한 서비스 아키텍처를 설계하고 안정적인 구조의 코드를 구현할 수 있는 역량이 필요해요."
+        ],
+        "system_reason": "백엔드 도메인과 직접 일치하고 서버 개발 운영 경험, 복잡한 문제 해결/비즈니스 임팩트 경험이 맞습니다. 그러나 견고한 서비스 아키텍처 설계 역량이 core prerequisite gap으로 남아 있어 상위 두 개보다 약합니다."
+      },
+      "expected_winner": "A_better",
+      "label_reason": "둘 다 backend strong. A(당근 광고 backend)의 필수 요건(MSA·REST/gRPC·DB 설계/운영·데이터 파이프라인)이 그의 gRPC 이관·RDB 모델링·Kafka 파이프라인 경험과 거의 1:1로 일치하고 '백엔드/플랫폼' 선호와도 맞음. B(ML Backend)도 괜찮은 플랫폼 백엔드 적합이나 일치도는 A가 더 높음. A의 '5년+' 요건은 2.5년이라 갭이지만 '이에 준하는 역량'으로 일부 상쇄.",
+      "confidence": "medium"
+    }
+  ]
+}

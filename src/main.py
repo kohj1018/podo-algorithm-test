@@ -23,6 +23,7 @@ from . import (
     config,
     eval_resumes,
     fetch_jobs,
+    golden_pairs,
     llm,
     matching,
     parse_job,
@@ -861,6 +862,172 @@ def _write_mode_comparison(personas: List[dict], eval_root: Path, meta: dict) ->
     console.print(t)
 
 
+# --------------------------------------------------------------------------- golden pairs
+def _eval_root(args) -> Path:
+    return Path(getattr(args, "eval_dir", None) or getattr(args, "from_dir", None)
+                or (config.OUTPUTS_DIR / "eval"))
+
+
+def _discover_eval_personas(eval_root: Path) -> List[str]:
+    """Persona slugs that have at least a final_ranking artifact under outputs/eval/<persona>/."""
+    if not eval_root.exists():
+        return []
+    out = []
+    for d in sorted(p for p in eval_root.iterdir() if p.is_dir()):
+        if (d / "final_ranking.json").exists() or any(
+                (d / f"final_ranking_{m}.json").exists() for m in rank_aggregate.RANKING_MODES):
+            out.append(d.name)
+    return out
+
+
+def cmd_eval_golden_pairs(args) -> bool:
+    """Measure ranking ACCURACY against human-labeled pairs. Reads cached eval artifacts only —
+    no LLM, no fetching. Missing jobs/personas are reported as unavailable, never re-fetched."""
+    console.rule("[bold]Golden-pair eval — 사람 라벨 기준 랭킹 정확도 (LLM 호출 없음)")
+    pairs_path = Path(args.pairs)
+    eval_root = _eval_root(args)
+
+    if not pairs_path.exists():
+        console.print(f"[red]pairs 파일이 없습니다:[/] {pairs_path}")
+        console.print("   먼저 후보를 생성/라벨링하세요:")
+        console.print("   [dim]1) python -m src.main propose-golden-pairs --from outputs/eval[/]")
+        console.print("   [dim]2) data/eval/golden_pairs/proposed_pairs.json 에 expected_winner/label_reason 작성[/]")
+        console.print(f"   [dim]3) {pairs_path} 로 저장 후 다시 실행[/]")
+        console.print(f"   템플릿: [dim]data/eval/golden_pairs/golden_pairs.template.json[/]")
+        return False
+
+    pairs, errors, unlabeled = golden_pairs.load_pairs(pairs_path)
+    for e in errors:
+        console.print(f"   [yellow]· {e}[/]")
+    if unlabeled:
+        preview = ", ".join(unlabeled[:8]) + (" …" if len(unlabeled) > 8 else "")
+        console.print(f"   [yellow]· 라벨 미작성(expected_winner 비어있음) {len(unlabeled)}쌍 → 점수에서 제외[/]")
+        console.print(f"     [dim]{preview}[/]")
+        console.print("     [dim]각 쌍의 expected_winner 를 A_better/B_better/tie/unsure 로 채운 뒤 다시 실행하세요.[/]")
+    if not pairs:
+        if unlabeled:
+            console.print(f"[red]평가할 라벨된 쌍이 없습니다.[/] {len(unlabeled)}쌍이 모두 미라벨 상태입니다 — "
+                          "expected_winner 를 채운 뒤 다시 실행하세요.")
+        else:
+            console.print("[red]유효한 골든 페어가 없습니다.[/]")
+        return False
+    console.print(f"[bold]골든 페어 {len(pairs)}쌍 로드[/] (라벨 완료) · "
+                  f"미라벨 {len(unlabeled)}쌍 · 오류 스킵 {len(errors)}건")
+
+    modes = list(rank_aggregate.RANKING_MODES)
+    scoring_mode = getattr(args, "scoring_mode", None) or "baseline"
+    personas = sorted({p["persona"] for p in pairs})
+    if scoring_mode == "baseline":
+        artifacts = {pe: golden_pairs.load_persona_artifacts(eval_root, pe) for pe in personas}
+    else:
+        console.print(f"[bold]scoring-mode: {scoring_mode}[/] (캐시 산출물로 fit 재계산·재정렬, LLM 미호출)")
+        artifacts = {pe: golden_pairs.rescore_persona(eval_root, pe, scoring_mode) for pe in personas}
+    for pe in personas:
+        a = artifacts[pe]
+        if not a["available"]:
+            console.print(f"   [yellow]· persona '{pe}': 산출물 없음 → 해당 쌍은 unavailable 처리 "
+                          f"(재수집 안 함; eval-resumes 먼저 실행)[/]")
+        else:
+            extra = f" · dedup 그룹 {sum(len(v) for v in a.get('dedup_audit',{}).values())}건" \
+                if a.get("dedup_audit") else ""
+            console.print(f"   [dim]· {pe}: 모드 {a['modes_present']} · 공고 {len(a['jobs'])}건{extra}[/]")
+
+    results = golden_pairs.evaluate_pairs(pairs, artifacts, modes)
+    metrics = golden_pairs.aggregate_metrics(results, modes)
+
+    suffix = "" if scoring_mode == "baseline" else f"_{scoring_mode}"
+    meta = {"pairs_path": str(pairs_path), "eval_root": str(eval_root), "scoring_mode": scoring_mode}
+    eval_root.mkdir(parents=True, exist_ok=True)
+    (eval_root / f"golden_pair_report{suffix}.md").write_text(
+        golden_pairs.build_report_md(metrics, results, meta), encoding="utf-8")
+    (eval_root / f"golden_pair_report{suffix}.json").write_text(
+        json.dumps({"meta": meta, "metrics": metrics, "results": results},
+                   ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # console: accuracy by mode + the where-to-improve list
+    t = Table(title="골든 페어 정확도 (모드별) — 평가 내부 지표, fit/합격확률 아님")
+    t.add_column("모드"); t.add_column("pairwise(strict)", justify="center"); t.add_column("tie-aware", justify="center")
+    for m in modes:
+        d = metrics["per_mode"][m]
+        strict = "n/a" if d["strict_acc"] is None else f"{d['strict_correct']}/{d['strict_total']} ({d['strict_acc']*100:.0f}%)"
+        ta = "n/a" if d["tie_aware_acc"] is None else f"{d['tie_aware_correct']}/{d['tie_aware_total']} ({d['tie_aware_acc']*100:.0f}%)"
+        label = f"{m} ⭐" if m == metrics["headline_mode"] else m
+        t.add_row(label, strict, ta)
+    console.print(t)
+
+    console.print(f"   평가가능 {metrics['n_available']}/{metrics['n_pairs']}쌍 · "
+                  f"라벨 분포 {metrics['label_counts']}")
+    if metrics["system_vs_human"]:
+        console.print(f"[yellow]시스템≠사람 (헤드라인 모드 {metrics['headline_mode']}): "
+                      f"{len(metrics['system_vs_human'])}쌍[/]")
+        for d in metrics["system_vs_human"][:8]:
+            console.print(f"   [dim]{d['pair_id']} ({d['persona']}/{d['category']}): "
+                          f"사람={d['expected_winner']} 시스템={d['headline_winner']} "
+                          f"| {d['job_a']}(fit{d['fit_a']}) vs {d['job_b']}(fit{d['fit_b']})[/]")
+    else:
+        console.print("[green]✓ 헤드라인 모드가 모든 decisive 쌍에서 사람 라벨과 일치[/]")
+    if metrics["n_unavailable"]:
+        console.print(f"[yellow]unavailable {metrics['n_unavailable']}쌍 (산출물에 없음 — 재수집 안 함)[/]")
+    console.print(f"\n[green]✓ 리포트 (scoring-mode={scoring_mode})[/] → "
+                  f"{eval_root / ('golden_pair_report' + suffix + '.md')} · "
+                  f"{eval_root / ('golden_pair_report' + suffix + '.json')}")
+    return True
+
+
+def cmd_propose_golden_pairs(args) -> bool:
+    """Suggest HARD candidate pairs for human labeling from existing outputs/eval (no LLM, no labels)."""
+    console.rule("[bold]Propose golden pairs — 라벨링 후보(하드 케이스) 추출 (라벨링하지 않음)")
+    from_dir = _eval_root(args)
+    out_dir = Path(getattr(args, "out_dir", None) or (config.DATA_DIR / "eval" / "golden_pairs"))
+    max_pairs = getattr(args, "max_pairs", None) or 50
+
+    personas = _discover_eval_personas(from_dir)
+    if not personas:
+        console.print(f"[red]{from_dir} 에 평가 산출물이 없습니다.[/] 먼저 "
+                      "`python -m src.main eval-resumes` 로 outputs/eval 을 생성하세요.")
+        return False
+    console.print(f"[bold]산출물 페르소나 {len(personas)}개:[/] {personas} (소스: {from_dir})")
+
+    artifacts = {pe: golden_pairs.load_persona_artifacts(from_dir, pe) for pe in personas}
+    proposed, stats = golden_pairs.propose_pairs(artifacts, max_pairs)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "_about": "UNLABELED golden-pair candidates auto-extracted from outputs/eval. A human must "
+                  "fill expected_winner (A_better|B_better|tie|unsure) and label_reason, then save "
+                  "as golden_pairs.json and run `eval-golden-pairs`.",
+        "_a_b_convention": "A = the job the default mode (domain_fit_bt) ranks HIGHER; A_better means "
+                           "you agree with the system, B_better means you would flip it.",
+        "_generated_from": str(from_dir),
+        "_stats": stats,
+        "pairs": proposed,
+    }
+    (out_dir / "proposed_pairs.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_dir / "proposed_pairs.md").write_text(
+        golden_pairs.build_proposed_md(proposed, stats, {"from": str(from_dir), "max_pairs": max_pairs}),
+        encoding="utf-8")
+
+    t = Table(title=f"라벨링 후보 (상위 {stats['returned']}/{stats['total_candidates']}쌍, 하드니스 순)")
+    t.add_column("pair_id"); t.add_column("persona"); t.add_column("category")
+    t.add_column("난이도", justify="center"); t.add_column("A vs B"); t.add_column("fit A/B", justify="center")
+    t.add_column("모드불일치", justify="center")
+    for c in proposed[:15]:
+        sv = c["_system_view"]
+        t.add_row(c["pair_id"], c["persona"], c["category"], c["difficulty"],
+                  f"{c['job_a_title']} vs {c['job_b_title']}",
+                  f"{sv['fit_a']}/{sv['fit_b']}", "⚠" if sv["modes_disagree"] else "-")
+    console.print(t)
+    if stats["dropped"]:
+        console.print(f"[yellow]· 상한(--max-pairs={max_pairs})으로 {stats['dropped']}쌍 생략됨 "
+                      f"(전체 후보 {stats['total_candidates']}쌍). 더 받으려면 --max-pairs 를 늘리세요.[/]")
+    console.print(f"   카테고리 분포(반환분): {stats['per_category']}")
+    console.print(f"\n[green]✓ 후보 생성[/] → {out_dir / 'proposed_pairs.md'} · {out_dir / 'proposed_pairs.json'}")
+    console.print("[bold]다음 단계(수동):[/] proposed_pairs.json 에 expected_winner/label_reason 작성 → "
+                  "golden_pairs.json 으로 저장 → eval-golden-pairs 실행")
+    return True
+
+
 COMMANDS = {
     "run": cmd_run,
     "fetch-jobs": cmd_fetch_jobs,
@@ -869,6 +1036,8 @@ COMMANDS = {
     "doctor": cmd_doctor,
     "regression": cmd_regression,
     "eval-resumes": cmd_eval_resumes,
+    "eval-golden-pairs": cmd_eval_golden_pairs,
+    "propose-golden-pairs": cmd_propose_golden_pairs,
 }
 
 
@@ -909,6 +1078,24 @@ def main(argv=None) -> int:
     p_eval.add_argument("--dry-run", action="store_true",
                         help="cheap checks only: validate files/sections + print plan, NO LLM calls")
     p_eval.add_argument("--refresh-cache", action="store_true", help="ignore cached parses and re-parse")
+
+    p_gp = sub.add_parser("eval-golden-pairs",
+                          help="measure ranking ACCURACY vs human-labeled pairs (reads cached eval artifacts, no LLM)")
+    p_gp.add_argument("--pairs", default=str(config.DATA_DIR / "eval" / "golden_pairs" / "golden_pairs.json"),
+                      help="human-labeled golden pairs JSON (default data/eval/golden_pairs/golden_pairs.json)")
+    p_gp.add_argument("--eval-dir", default=None,
+                      help="root of per-persona eval artifacts (default outputs/eval)")
+    p_gp.add_argument("--scoring-mode", choices=["baseline", "dedup_required_preferred"], default="baseline",
+                      help="baseline = cached fit; dedup_required_preferred = experimental re-score that "
+                           "drops duplicate required/preferred caps (re-ranks from cache, no LLM)")
+
+    p_pp = sub.add_parser("propose-golden-pairs",
+                          help="suggest HARD candidate pairs for human labeling from outputs/eval (no LLM, no labels)")
+    p_pp.add_argument("--from", dest="from_dir", default=None,
+                      help="root of per-persona eval artifacts (default outputs/eval)")
+    p_pp.add_argument("--max-pairs", type=int, default=50, help="max candidate pairs to return (default 50)")
+    p_pp.add_argument("--out-dir", default=None,
+                      help="output dir for proposed_pairs.{md,json} (default data/eval/golden_pairs)")
     args = parser.parse_args(argv)
     try:
         ok = COMMANDS[args.command](args)

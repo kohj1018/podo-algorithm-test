@@ -1,0 +1,727 @@
+{
+  "_about": "Targeted validation set for the experimental dedup_required_preferred scoring mode. Real cached jobs only; nothing invented. Fill expected_winner/label_reason/confidence to validate that dedup is correct where it changes ranking and harmless elsewhere.",
+  "_how_to_use": "Fill the blank fields, then: python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/dedup_validation_pairs.json --scoring-mode dedup_required_preferred (and compare with --scoring-mode baseline).",
+  "summary": {
+    "n_pairs": 11,
+    "by_persona": {
+      "junior_frontend": 5,
+      "backend_platform": 2,
+      "devops_infra_security": 2,
+      "ai_ml_application": 2
+    },
+    "by_validation_role": {
+      "control_no_dups": 6,
+      "winner_change": 3,
+      "fit_change_no_winner": 2
+    },
+    "n_pairs_involving_real_detected_duplicate": 5,
+    "distinct_jobs_with_duplicates_in_artifacts": [
+      "toss-4076130003"
+    ],
+    "enough_non_toss4076130003_cases": false,
+    "data_limitation": "현재 캐시 산출물 24개 (persona,job) 인스턴스 중 required/preferred 중복이 탐지되는 공고는 toss-4076130003(junior_frontend) **단 1개**뿐입니다. backend·devops·ai_ml·기타 frontend 공고에는 탐지되는 중복이 없습니다. 따라서 dedup의 '이득'은 이 한 공고로만 검증 가능하며, 다른 페르소나 쌍은 dedup이 **무해(no-op)** 함을 확인하는 통제(control) 역할만 합니다. 새 중복 사례를 만들려면 더 많은 공고를 수집/구조화해야 하나, 이는 LLM 호출이 필요하므로 이번 범위에서 제외했습니다(가짜 쌍 생성 금지)."
+  },
+  "pairs": [
+    {
+      "pair_id": "dval-junior_frontend-01",
+      "persona": "junior_frontend",
+      "category": "same_domain_close",
+      "validation_role": "winner_change",
+      "purpose_hint": "winner_change?",
+      "job_a": {
+        "job_id": "daangn-6692173003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커머스",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.3367,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 4,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 5,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": [
+          {
+            "requirement_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+            "match_level": "missing",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          },
+          {
+            "requirement_text": "잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험",
+            "match_level": "adjacent",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          }
+        ]
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": "B",
+      "baseline_fit_levels": {
+        "A": 3,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "involves_detected_duplicate": true,
+      "why_useful_for_dedup_validation": "dedup이 이 쌍의 domain_fit_bt 승자를 바꿈 — 사람 라벨로 그 변화가 옳은지 검증.",
+      "_previously_labeled_in_golden_pairs_20": "B_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "daangn-6692173003",
+      "job_a_title": "Software Engineer, Frontend | 커머스",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/junior_frontend.md"
+    },
+    {
+      "pair_id": "dval-junior_frontend-02",
+      "persona": "junior_frontend",
+      "category": "same_domain_close",
+      "validation_role": "winner_change",
+      "purpose_hint": "winner_change?",
+      "job_a": {
+        "job_id": "daangn-7689088003",
+        "company": "Daangn",
+        "title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.6765,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 2,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 5,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": [
+          {
+            "requirement_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+            "match_level": "missing",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          },
+          {
+            "requirement_text": "잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험",
+            "match_level": "adjacent",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          }
+        ]
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": "B",
+      "baseline_fit_levels": {
+        "A": 3,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "involves_detected_duplicate": true,
+      "why_useful_for_dedup_validation": "dedup이 이 쌍의 domain_fit_bt 승자를 바꿈 — 사람 라벨로 그 변화가 옳은지 검증.",
+      "_previously_labeled_in_golden_pairs_20": "B_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "daangn-7689088003",
+      "job_a_title": "Software Engineer, Frontend | 커뮤니티 (모임)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/junior_frontend.md"
+    },
+    {
+      "pair_id": "dval-junior_frontend-03",
+      "persona": "junior_frontend",
+      "category": "same_domain_close",
+      "validation_role": "winner_change",
+      "purpose_hint": "winner_change?",
+      "job_a": {
+        "job_id": "toss-4076141003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 1.0454,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 4,
+        "rank_dedup_domain_fit_bt": 5,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 5,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": [
+          {
+            "requirement_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+            "match_level": "missing",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          },
+          {
+            "requirement_text": "잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험",
+            "match_level": "adjacent",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          }
+        ]
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": "B",
+      "baseline_fit_levels": {
+        "A": 2,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 2,
+        "B": 3
+      },
+      "involves_detected_duplicate": true,
+      "why_useful_for_dedup_validation": "dedup이 이 쌍의 domain_fit_bt 승자를 바꿈 — 사람 라벨로 그 변화가 옳은지 검증.",
+      "_previously_labeled_in_golden_pairs_20": "B_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-4076141003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/junior_frontend.md"
+    },
+    {
+      "pair_id": "dval-junior_frontend-04",
+      "persona": "junior_frontend",
+      "category": "same_domain_close",
+      "validation_role": "fit_change_no_winner",
+      "purpose_hint": "fit_change_no_winner?",
+      "job_a": {
+        "job_id": "toss-5311744003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 2.1004,
+        "fit_baseline": 5,
+        "fit_dedup": 5,
+        "rank_baseline_domain_fit_bt": 1,
+        "rank_dedup_domain_fit_bt": 1,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 5,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": [
+          {
+            "requirement_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+            "match_level": "missing",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          },
+          {
+            "requirement_text": "잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험",
+            "match_level": "adjacent",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          }
+        ]
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 5,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 5,
+        "B": 3
+      },
+      "involves_detected_duplicate": true,
+      "why_useful_for_dedup_validation": "dedup이 한 공고의 fit을 바꾸지만 승자는 불변 — fit 상향이 순위 안정성을 깨지 않는지 검증.",
+      "_previously_labeled_in_golden_pairs_20": null,
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-5311744003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-4076130003",
+      "job_b_title": "Frontend Developer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/junior_frontend.md"
+    },
+    {
+      "pair_id": "dval-junior_frontend-05",
+      "persona": "junior_frontend",
+      "category": "domain_transfer",
+      "validation_role": "fit_change_no_winner",
+      "purpose_hint": "fit_change_no_winner?",
+      "job_a": {
+        "job_id": "toss-4076130003",
+        "company": "Toss",
+        "title": "Frontend Developer",
+        "role_family": "frontend",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 5,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": [
+          {
+            "requirement_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험",
+            "match_level": "missing",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          },
+          {
+            "requirement_text": "잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험",
+            "match_level": "adjacent",
+            "requirement_type": "required",
+            "paired_preferred_text": "레거시 코드를 최신의 개발 환경에 맞게 개선한 경험이나, 잘 모르던 기술 스택을 빠르게 학습해서 개발해나간 경험이 있으신 분이면 좋아요.",
+            "duplicate_resolution": "downgraded_required_for_cap (preferred twin exists)",
+            "excluded_from_fit_cap": true
+          }
+        ]
+      },
+      "job_b": {
+        "job_id": "toss-7503655003",
+        "company": "Toss",
+        "title": "AI Engineer (Brain, AIOC)",
+        "role_family": "ml_ai",
+        "domain_alignment": "weak",
+        "bt_score": 0.0,
+        "fit_baseline": 1,
+        "fit_dedup": 1,
+        "rank_baseline_domain_fit_bt": 6,
+        "rank_dedup_domain_fit_bt": 6,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 2,
+        "B": 1
+      },
+      "dedup_fit_levels": {
+        "A": 3,
+        "B": 1
+      },
+      "involves_detected_duplicate": true,
+      "why_useful_for_dedup_validation": "dedup이 한 공고의 fit을 바꾸지만 승자는 불변 — fit 상향이 순위 안정성을 깨지 않는지 검증.",
+      "_previously_labeled_in_golden_pairs_20": null,
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-4076130003",
+      "job_a_title": "Frontend Developer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/junior_frontend.md"
+    },
+    {
+      "pair_id": "dval-backend_platform-01",
+      "persona": "backend_platform",
+      "category": "same_domain_close",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "daangn-6640363003",
+        "company": "Daangn",
+        "title": "Software Engineer, Backend | 광고",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "bt_score": 1.2749,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 2,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "bt_score": 0.8151,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "dedup_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "A_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "daangn-6640363003",
+      "job_a_title": "Software Engineer, Backend | 광고",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/backend_platform.md"
+    },
+    {
+      "pair_id": "dval-backend_platform-02",
+      "persona": "backend_platform",
+      "category": "same_domain_close",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "toss-6613962003",
+        "company": "Toss",
+        "title": "Server Developer (수신)",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "bt_score": 2.0676,
+        "fit_baseline": 4,
+        "fit_dedup": 4,
+        "rank_baseline_domain_fit_bt": 1,
+        "rank_dedup_domain_fit_bt": 1,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6600650003",
+        "company": "Toss",
+        "title": "ML Backend Engineer",
+        "role_family": "backend",
+        "domain_alignment": "strong",
+        "bt_score": 0.8151,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 4,
+        "B": 3
+      },
+      "dedup_fit_levels": {
+        "A": 4,
+        "B": 3
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "A_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/backend_platform.md"
+    },
+    {
+      "pair_id": "dval-devops_infra_security-01",
+      "persona": "devops_infra_security",
+      "category": "same_domain_close",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "daangn-5004587003",
+        "company": "Daangn",
+        "title": "Network Engineer | 인프라 (네트워크, Cloud)",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "bt_score": 1.0454,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 2,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6677722003",
+        "company": "Toss",
+        "title": "Cloud Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 2,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 2,
+        "B": 2
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "B_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "daangn-5004587003",
+      "job_a_title": "Network Engineer | 인프라 (네트워크, Cloud)",
+      "job_a_company": "Daangn",
+      "job_b_id": "toss-6677722003",
+      "job_b_title": "Cloud Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/devops_infra_security.md"
+    },
+    {
+      "pair_id": "dval-devops_infra_security-02",
+      "persona": "devops_infra_security",
+      "category": "same_domain_close",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "toss-7702581003",
+        "company": "Toss",
+        "title": "AIOps Platform Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "bt_score": 2.1004,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 1,
+        "rank_dedup_domain_fit_bt": 1,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6677722003",
+        "company": "Toss",
+        "title": "Cloud Engineer",
+        "role_family": "devops_infra",
+        "domain_alignment": "strong",
+        "bt_score": 0.841,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 2,
+        "B": 2
+      },
+      "dedup_fit_levels": {
+        "A": 2,
+        "B": 2
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "A_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-7702581003",
+      "job_a_title": "AIOps Platform Engineer",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6677722003",
+      "job_b_title": "Cloud Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/devops_infra_security.md"
+    },
+    {
+      "pair_id": "dval-ai_ml_application-01",
+      "persona": "ai_ml_application",
+      "category": "adjacent_vs_primary",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "toss-7503655003",
+        "company": "Toss",
+        "title": "AI Engineer (Brain, AIOC)",
+        "role_family": "ml_ai",
+        "domain_alignment": "strong",
+        "bt_score": 1.2749,
+        "fit_baseline": 2,
+        "fit_dedup": 2,
+        "rank_baseline_domain_fit_bt": 2,
+        "rank_dedup_domain_fit_bt": 2,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6308074003",
+        "company": "Toss",
+        "title": "Data Analytics Engineer",
+        "role_family": "data",
+        "domain_alignment": "adjacent",
+        "bt_score": 0.8151,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 2,
+        "B": 3
+      },
+      "dedup_fit_levels": {
+        "A": 2,
+        "B": 3
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "A_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-7503655003",
+      "job_a_title": "AI Engineer (Brain, AIOC)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6308074003",
+      "job_b_title": "Data Analytics Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/ai_ml_application.md"
+    },
+    {
+      "pair_id": "dval-ai_ml_application-02",
+      "persona": "ai_ml_application",
+      "category": "adjacent_vs_primary",
+      "validation_role": "control_no_dups",
+      "purpose_hint": "control_no_dups?",
+      "job_a": {
+        "job_id": "toss-6545457003",
+        "company": "Toss",
+        "title": "AI Engineer (Commerce)",
+        "role_family": "ml_ai",
+        "domain_alignment": "strong",
+        "bt_score": 2.0676,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 1,
+        "rank_dedup_domain_fit_bt": 1,
+        "detected_duplicate_groups": []
+      },
+      "job_b": {
+        "job_id": "toss-6308074003",
+        "company": "Toss",
+        "title": "Data Analytics Engineer",
+        "role_family": "data",
+        "domain_alignment": "adjacent",
+        "bt_score": 0.8151,
+        "fit_baseline": 3,
+        "fit_dedup": 3,
+        "rank_baseline_domain_fit_bt": 3,
+        "rank_dedup_domain_fit_bt": 3,
+        "detected_duplicate_groups": []
+      },
+      "baseline_winner": "A",
+      "dedup_winner_if_different": null,
+      "baseline_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "dedup_fit_levels": {
+        "A": 3,
+        "B": 3
+      },
+      "involves_detected_duplicate": false,
+      "why_useful_for_dedup_validation": "중복 그룹이 전혀 없는 통제 쌍 — dedup이 baseline과 동일(무해)해야 함을 확인.",
+      "_previously_labeled_in_golden_pairs_20": "A_better",
+      "expected_winner": "",
+      "label_reason": "",
+      "confidence": "",
+      "job_a_id": "toss-6545457003",
+      "job_a_title": "AI Engineer (Commerce)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6308074003",
+      "job_b_title": "Data Analytics Engineer",
+      "job_b_company": "Toss",
+      "resume_path": "data/eval/resumes/ai_ml_application.md"
+    }
+  ]
+}

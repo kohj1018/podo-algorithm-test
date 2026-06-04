@@ -6,6 +6,7 @@ conservatively from verified requirement coverage.
 """
 from __future__ import annotations
 
+import re
 from typing import Dict, List, Tuple
 
 from .models import (
@@ -119,12 +120,89 @@ def elo(ids: List[str], results: List[PairwiseResult], k: float = 32.0) -> Dict[
     return rating
 
 
+# --------------------------------------------------------------------------- dedup (experimental)
+_DEDUP_MANDATORY_TOKENS = ("필수", "반드시", "must", "필수적", "필수로")
+
+
+def _norm_req(t: str) -> str:
+    return re.sub(r"[\s\W]+", "", (t or "").lower())
+
+
+def _req_tokens(t: str) -> set:
+    return {w for w in re.split(r"[\s,/()·\-]+", (t or "").lower()) if len(w) >= 2}
+
+
+def detect_required_preferred_dups(rows) -> dict:
+    """EXPERIMENTAL (Change B). Map row-index -> dedup info for required/critical rows that
+    DUPLICATE a preferred/optional row describing the SAME capability within one JD (e.g. a
+    '레거시 개선' required row whose JD also lists '…레거시 개선…있으면 좋아요' as preferred).
+
+    Conservative on purpose: cross-type only (required/critical ↔ preferred/optional), needs real
+    text overlap (containment OR high token Jaccard, optionally backed by same requirement_category),
+    skips short/generic text, and KEEPS a row whose wording is clearly mandatory (필수/반드시/must).
+    Never mutates or removes rows — callers only use this to drop the harsher duplicate from the FIT
+    CAP calculation, while the row still appears in the report. Used only when the caller opts in."""
+    rows = list(rows)
+    reqs = [(i, r) for i, r in enumerate(rows) if r.requirement_type in ("critical", "required")]
+    prefs = [(i, r) for i, r in enumerate(rows) if r.requirement_type in ("preferred", "optional")]
+    info: dict = {}
+    gid = 0
+    for ri, rr in reqs:
+        rn = _norm_req(rr.requirement_text)
+        if len(rn) < 6:
+            continue
+        rt = _req_tokens(rr.requirement_text)
+        match = None
+        for pi, pr in prefs:
+            pn = _norm_req(pr.requirement_text)
+            if len(pn) < 6:
+                continue
+            pt = _req_tokens(pr.requirement_text)
+            core = rn[: max(8, len(rn) // 2)]
+            contained = bool(core) and (core in pn or pn[: max(8, len(pn) // 2)] in rn)
+            union = rt | pt
+            jac = (len(rt & pt) / len(union)) if union else 0.0
+            same_cat = (getattr(rr, "requirement_category", "other") != "other"
+                        and rr.requirement_category == getattr(pr, "requirement_category", "other"))
+            if contained or jac >= 0.6 or (same_cat and jac >= 0.4):
+                how = "containment" if contained else (
+                    f"token_jaccard={jac:.2f}" + (" + same_category" if same_cat else ""))
+                match = (pr, how)
+                break
+        if not match:
+            continue
+        pr, how = match
+        mandatory = any(tok in rr.requirement_text.lower() for tok in _DEDUP_MANDATORY_TOKENS)
+        info[ri] = {
+            "duplicate_group_id": f"dup-{gid}",
+            "requirement_text": rr.requirement_text,
+            "requirement_type": rr.requirement_type,
+            "match_level": rr.match_level,
+            "paired_preferred_text": pr.requirement_text,
+            "duplicate_resolution": ("kept_strict (mandatory wording)" if mandatory
+                                     else "downgraded_required_for_cap (preferred twin exists)"),
+            "excluded_from_fit_cap": (not mandatory),
+            "dedup_reason": f"required row duplicates a preferred/optional row ({how})",
+        }
+        gid += 1
+    return info
+
+
 # --------------------------------------------------------------------------- 1-5 fit level
-def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
+def compute_fit(table: MatchingTable, alignment: str = "weak",
+                dedup_required_preferred: bool = False) -> dict:
     """Derive a 1-5 fit level. CORE (technical/domain/experience_level/language) gaps drive
     caps; behavioral gaps are de-weighted and do not cap. A visible domain-distance cap is
     applied last. The returned numbers are fit metrics, never pass probability / percentages.
+
+    dedup_required_preferred (EXPERIMENTAL, Change B, default OFF — baseline is byte-identical):
+    when True, a required/critical gap that merely DUPLICATES a preferred/optional row for the same
+    capability is excluded from the role-defining cap counters (so it can't cap fit twice). The row
+    is still counted in the weighted ratio and still shown as a gap; the resolution is recorded in
+    the returned ``dedup_audit`` for auditability.
     """
+    dedup_info = detect_required_preferred_dups(table.rows) if dedup_required_preferred else {}
+    excluded_cap = {i for i, d in dedup_info.items() if d["excluded_from_fit_cap"]}
     earned = total = 0.0
     prereq_crit_unmet = prereq_req_unmet = 0
     prereq_crit_total = prereq_req_total = 0
@@ -137,7 +215,7 @@ def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
     product_duties: List[str] = []  # critical/required items that are product duties, NOT prerequisites
     invalid: List[str] = []
     risks: List[str] = []
-    for row in table.rows:
+    for idx, row in enumerate(table.rows):
         # Weight by type AND by prerequisite status, so product duties / context / behavioral
         # preferences cannot dominate the score.
         w = TYPE_WEIGHT.get(row.requirement_type, 1.0) * STATUS_WEIGHT.get(row.prerequisite_status, 0.7)
@@ -164,7 +242,7 @@ def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
                 prereq_crit_total += 1
                 if unmet:
                     prereq_crit_unmet += 1
-                    if not is_minor:
+                    if not is_minor and idx not in excluded_cap:
                         role_defining_crit_unmet += 1
         if row.requirement_type == "required":
             req_total += 1
@@ -174,7 +252,7 @@ def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
                 prereq_req_total += 1
                 if unmet:
                     prereq_req_unmet += 1
-                    if not is_minor:
+                    if not is_minor and idx not in excluded_cap:
                         role_defining_req_unmet += 1
 
         if row.match_level == "direct" and row.confidence in ("high", "medium") and not row.invalid_match:
@@ -265,6 +343,7 @@ def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
         "product_duties": product_duties[:10],
         "invalid": invalid[:10],
         "risks": risks[:8],
+        "dedup_audit": list(dedup_info.values()),
     }
 
 

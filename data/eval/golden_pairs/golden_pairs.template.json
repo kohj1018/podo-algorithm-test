@@ -1,0 +1,73 @@
+{
+  "_about": "TEMPLATE for the human-labeled golden-pair accuracy eval. Copy this file to 'golden_pairs.json' (same dir), replace the example pairs with your own labeled pairs, then run: python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/golden_pairs.json . The evaluator reads ONLY cached artifacts under outputs/eval/<persona>/ (no LLM, no fetching), so each pair's persona must have been run by `eval-resumes` first and both job ids must exist in that persona's final_ranking artifacts.",
+  "_schema": {
+    "pair_id": "string, unique within the file (e.g. gp-001)",
+    "persona": "string, must match a folder under outputs/eval/ (e.g. backend_platform)",
+    "resume_path": "string, informational only (the resume the persona used)",
+    "job_a_id": "string, must exist in outputs/eval/<persona>/final_ranking*.json",
+    "job_a_title": "string, informational",
+    "job_a_company": "string, informational",
+    "job_b_id": "string, must exist in outputs/eval/<persona>/final_ranking*.json",
+    "job_b_title": "string, informational",
+    "job_b_company": "string, informational",
+    "expected_winner": "one of: A_better | B_better | tie | unsure  (this is the HUMAN label)",
+    "label_reason": "string, why you labeled it this way (extractive/job-relative reasoning)",
+    "difficulty": "one of: easy | medium | hard",
+    "category": "one of: same_domain_close | adjacent_vs_primary | seniority_gap | domain_transfer | tool_stack_gap | product_duty_vs_prerequisite | weak_vs_adjacent | mismatch_guard"
+  },
+  "_label_meaning": {
+    "A_better": "job A is the better-fit role for this resume; the system should rank A above B",
+    "B_better": "job B is the better-fit role; the system should rank B above A",
+    "tie": "genuinely too close to call; the system is 'correct' if it treats them as a near-tie (same fit_level)",
+    "unsure": "you cannot decide; EXCLUDED from accuracy scoring (reported only)"
+  },
+  "_a_b_convention": "Order is arbitrary, but `propose-golden-pairs` emits A = the job the default mode (domain_fit_bt) ranks higher, so A_better = you agree with the system and B_better = you would flip it. You may order A/B however you like in hand-written pairs.",
+  "_note": "fit_level is 1-5 and is NOT a pass probability. The accuracy %% reported by the evaluator is an eval-internal agreement metric (system vs your labels), not a product number.",
+  "pairs": [
+    {
+      "pair_id": "gp-example-001",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7702581003",
+      "job_b_title": "AIOps Platform Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "A_better",
+      "label_reason": "ILLUSTRATIVE EXAMPLE. A is a core backend/server role (primary domain) with Kotlin/Spring + RDB design directly matched; B is an adjacent devops/AIOps platform role with multiple missing core prerequisites (time-series DB, search engine, open-source platform ownership). A is the clearer fit for a backend platform resume.",
+      "difficulty": "easy",
+      "category": "adjacent_vs_primary"
+    },
+    {
+      "pair_id": "gp-example-002",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-6600650003",
+      "job_b_title": "ML Backend Engineer",
+      "job_b_company": "Toss",
+      "expected_winner": "A_better",
+      "label_reason": "ILLUSTRATIVE EXAMPLE. Both are strong-domain backend roles, so this is a close same-domain call. A has no core prerequisite gap; B leaves 'robust service architecture design' as an unmet core prerequisite, so A is the slightly stronger fit.",
+      "difficulty": "medium",
+      "category": "same_domain_close"
+    },
+    {
+      "pair_id": "gp-example-003",
+      "persona": "backend_platform",
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "job_a_id": "toss-6613962003",
+      "job_a_title": "Server Developer (수신)",
+      "job_a_company": "Toss",
+      "job_b_id": "toss-7503655003",
+      "job_b_title": "AI Engineer (Brain, AIOC)",
+      "job_b_company": "Toss",
+      "expected_winner": "A_better",
+      "label_reason": "ILLUSTRATIVE EXAMPLE. Cross-discipline transfer: A is the candidate's primary backend domain; B is an ML/AI role (weak domain) with essentially all AI prerequisites missing. A is far better fit.",
+      "difficulty": "easy",
+      "category": "domain_transfer"
+    }
+  ]
+}
