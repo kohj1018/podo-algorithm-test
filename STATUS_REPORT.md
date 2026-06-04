@@ -2,7 +2,7 @@
 
 > 이 문서는 다른 AI/엔지니어가 **프로젝트 현황, 그동안의 의사결정 과정, 알고리즘, 실험 결과**를 한 번에
 > 파악하도록 작성한 종합 보고서입니다. 특히 **`986dd24` 커밋 이후(= 골든 페어 정확도 평가 + dedup 스코어링
-> ablation, 커밋 `61864d2`)** 에 집중합니다. 작성 기준일: 2026-06-04.
+> ablation, 커밋 `61864d2`)** 에 집중합니다. 작성 2026-06-04 · 최종 갱신 2026-06-05.
 
 ---
 
@@ -45,9 +45,10 @@
 |---|---|
 | `50c5226` | v0: 단일 실 이력서로 파이프라인 end-to-end 검증 |
 | `986dd24` | 멀티-페르소나 진단 스위트 + 3-모드 ablation → 기본 정렬을 **domain_fit_bt** 로 전환 |
-| **`61864d2`** | **⭐ 이번 세션: 골든 페어 정확도 평가 + dedup 스코어링 ablation(실험)** |
+| **`61864d2`** | **⭐ 골든 페어 정확도 평가 + dedup 스코어링 ablation(실험) — 코어 작업** |
+| `101bdb8` | 문서: `PORTING_GUIDE.md`·`STATUS_REPORT.md` 추가 + README 마이그레이션 정비 (코드 변경 없음) |
 
-`main`은 현재 `origin/main`보다 **2 커밋 앞섬**(`986dd24`, `61864d2` 미push) — 이후 문서 커밋이 추가될 수 있음.
+`main`은 현재 `origin/main`보다 **3 커밋 앞섬**(`986dd24`·`61864d2`·`101bdb8`, 모두 로컬·**미push**).
 
 ---
 
@@ -68,6 +69,16 @@ Skills 항목) → 4. JD 요구사항 구조화(**prerequisite vs product_duty**
 **진단 스위트(미변경):** fixture 회귀(불변식 10개), 멀티-페르소나(backend/junior_frontend/ai_ml/devops 4개 합성
 이력서)의 **방향성** 검사. → 이들은 *일관성*만 보고 *정확도*는 못 본다 (그래서 이번에 골든 페어 도입).
 
+**평가에 쓰인 4개 합성 페르소나(도메인 프로파일):** 이 값이 각 페르소나의 도메인 tier(strong/adjacent/weak/
+mismatch) 산출과 fit 도메인 cap을 결정한다. (정의: `data/eval/expected_behavior.json` · 모두 합성 데이터)
+
+| 페르소나 | primary 도메인 | secondary 도메인 |
+|---|---|---|
+| `backend_platform` | backend | fullstack, devops, cloud, infra |
+| `junior_frontend` | frontend, web | fullstack |
+| `ai_ml_application` | ml_ai, ai | data, backend |
+| `devops_infra_security` | devops, cloud, infra | security, backend |
+
 ---
 
 ## 5. ⭐ `986dd24` 이후 변경사항 (이번 세션 = 커밋 `61864d2`)
@@ -80,6 +91,13 @@ Skills 항목) → 4. JD 요구사항 구조화(**prerequisite vs product_duty**
 (랭킹이 나빠지면 떨어지는) 숫자다. **랭킹 로직 변경 없음, LLM 호출 없음** — `outputs/eval/<persona>/`의 기존
 산출물(`final_ranking_*.json`, `pairwise_comparisons.json`, `matching_tables.json`)만 읽는다.
 
+| 평가 | 측정 대상 | 정답 출처 |
+|---|---|---|
+| fixture 회귀(불변식) | 제품 규칙 준수 (일관성) | 규칙(내부) |
+| 멀티-페르소나 진단 | 도메인 방향성 일반화 (일관성) | 규칙(내부) |
+| 3-모드 ablation | 정렬 모드 간 차이 (가독성/legibility) | 규칙(내부) |
+| **골든 페어** | **순위가 사람 판단과 일치하는가 (정확도)** | **사람 라벨(외부)** ⭐ |
+
 ### 5.2 후보 추출(`propose-golden-pairs`) + 라벨링 패킷
 - `propose-golden-pairs --from outputs/eval --max-pairs N`: 기존 산출물에서 **하드 케이스**(같은 직군·근접 fit,
   모드 불일치, fit↔BT 불일치, 주력 vs 인접 fit 역전, 연차 갭, 동일 회사 유사 직군 등)를 자동 추출. **라벨은 절대
@@ -91,6 +109,12 @@ Skills 항목) → 4. JD 요구사항 구조화(**prerequisite vs product_duty**
 ### 5.3 사람 라벨 결과 (10쌍 → 20쌍)
 사용자가 직접 라벨링. **A/B 규약: A = 기본 모드(domain_fit_bt)가 더 높게 매긴 공고** → `A_better`=시스템 동의,
 `B_better`=뒤집어야 함. 라벨 분포(20쌍): **A_better 16, B_better 4**.
+
+- **라벨 4종:** `A_better`(A가 더 적합) · `B_better`(B가 더 적합) · `tie`(우열 어려움 — 시스템이 같은 fit이면 정답) ·
+  `unsure`(판단 보류 — 점수 제외).
+- **카테고리(20쌍에 등장):** `same_domain_close`(같은 직군·tier·근접 fit) · `adjacent_vs_primary`(주력 vs 인접 도메인) ·
+  `seniority_gap`(연차 prerequisite 차이) · `domain_transfer`(서로 다른 엔지니어링 직군). *(전체 8종은
+  `src/golden_pairs.py`의 `CATEGORIES`.)*
 
 | 단계 | domain_fit_bt | bt_primary | fit_primary |
 |---|---|---|---|
@@ -151,6 +175,14 @@ fit_level로 정렬하며 BT 신호를 버림.)
 - **회귀 0건.** 고친 쌍은 정확히 jf-01/04/06. **유일하게 바뀐 fit은 `toss-4076130003` 2→3.** 카테고리:
   same_domain_close 8/12→11/12, 나머지(adjacent_vs_primary 5/5·seniority_gap 2/2·domain_transfer 1/1) 전부 불변.
 - fixture 회귀 10/10 유지(baseline 경로 불변). recompute-baseline이 cached-baseline(16/15/12)과 일치 → 재계산 경로 충실.
+
+**작동 예시 — jf-01에서 무슨 일이 일어났나(메커니즘 한눈에):**
+1. B(`toss-4076130003`) baseline: role-defining required 미충족 2건(레거시 개선·점진 이관) → `role_defining_req_unmet=2`
+   → cap 2. (가중비율 0.52는 본래 레벨 3이지만 cap에 막혀 **fit 2**)
+2. dedup: "레거시 개선"이 preferred 트윈("…있으면 좋아요")을 가져 cap에서 제외 → `role_defining_req_unmet` 2→**1**
+   → cap 3 → **fit 2→3**. (행 자체는 리포트에 남고 `dedup_audit`에 기록 — 증거 삭제 아님)
+3. A(당근 커머스)는 **fit 3 그대로**. 이제 같은 strong tier에서 **둘 다 fit 3 → 동점** → domain_fit_bt 타이브레이크는
+   BT: **B 0.841 > A 0.337 → B가 위** → 사람 라벨(`B_better`)과 일치 → **수정**. (jf-04/06도 동일 원리)
 
 ### 5.7 dedup 검증 세트 + 결정적 한계
 `data/eval/golden_pairs/dedup_validation_pairs.{md,json}` — 실제 캐시 공고만으로 11쌍(가짜 생성 없음):
@@ -221,7 +253,8 @@ fit_level로 정렬하며 BT 신호를 버림.)
 - **데이터(`data/eval/golden_pairs/`, 13개):** `golden_pairs.template.json`, `golden_pairs.md`,
   `proposed_pairs.{md,json}`, `manual_labeling_packet.{md,json}`, `manual_labeling_packet_10.{md,json}`,
   `manual_labeling_remaining_10.{md,json}`, `golden_pairs_20.json`(사람 라벨), `dedup_validation_pairs.{md,json}`.
-- *(이식/문서: `docs/PORTING_GUIDE.md` 와 본 `STATUS_REPORT.md` 는 별도 문서 커밋으로 추가.)*
+**문서 커밋 `101bdb8` (코드 변경 없음):** `docs/PORTING_GUIDE.md`(이식 가이드, 신규) · 본 `STATUS_REPORT.md`(신규) ·
+`README.md`(문서 지도 + eval 명령 + 디렉터리 정비). 다른 서비스로의 마이그레이션은 `docs/PORTING_GUIDE.md`부터.
 
 ### 8.2 생성물(gitignore, `outputs/eval/`)
 `golden_pair_report.{md,json}`(baseline), `golden_pair_report_dedup_required_preferred.{md,json}`,
@@ -258,7 +291,7 @@ python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/golden_pairs
 - **기본 스코어링 모드:** `baseline` (`compute_fit` dedup OFF).
 - **실험 스코어링 모드:** `dedup_required_preferred` — `eval-golden-pairs --scoring-mode`로만 접근. `run`/`rank`/
   `regression`에는 미연결.
-- **HEAD:** `61864d2` (main, origin보다 앞섬, **미push**). 이후 문서 커밋이 추가될 수 있음.
+- **HEAD:** `101bdb8` (main, `origin/main`보다 **3 커밋 앞섬**, **미push**). 코어 작업은 `61864d2`.
 - 검증 수치 재확인: regression 10/10, baseline 16/15/12, dedup 19/15/15.
 
 ---
