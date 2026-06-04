@@ -35,7 +35,7 @@ python -m src.main run --limit 10 --pool-size 50 --refresh-cache
 
 **현재 검증된 동작:**
 - 이 이력서에 대해 **frontend 역할이 상위를 지배**하고, adjacent/weak/mismatch 역할은 그 아래로 정렬됩니다.
-- **도메인 우선순위 가드:** mismatch 도메인(marketing/design/product) 역할은 비-mismatch(엔지니어링) 역할 위로 올라갈 수 없습니다(BT 순서는 각 그룹 내에서 유지).
+- **도메인 우선순위 가드:** mismatch 도메인(marketing/design/product) 역할은 비-mismatch(엔지니어링) 역할 위로 올라갈 수 없습니다. 기본 정렬 `domain_fit_bt` 에서는 비-mismatch 파티션 안을 도메인 tier→fit→BT 순으로 정렬합니다(아래 "랭킹 모드" 참고).
 - **합격 확률/퍼센트 없음**, fit은 **1~5 레벨만**.
 - 살아남은 **모든 evidence 인용은 추출형(extractive)** — 이력서에서 그대로 복사.
 - listwise 누락/중복 보정, pairwise A/B·B/A 교차검증, BT 상대 적합도 집계, 캐시 기반 재현성.
@@ -56,7 +56,22 @@ python -m src.main run --limit 10 --pool-size 50 --refresh-cache
 7. 압축된 매칭 테이블로 LLM **listwise 재랭킹**
 8. 상위 공고에 대해 **A/B · B/A 순서 교차 pairwise 비교**
 9. **Bradley-Terry**(순수 파이썬) 로 상대 적합도 강도 집계
-10. **1~5 적합도** 최종 랭킹 출력 (퍼센트 없음)
+10. **도메인 우선순위 가드 + 랭킹 모드**(기본 `domain_fit_bt`)로 최종 정렬 → **1~5 적합도** 랭킹 출력 (퍼센트 없음)
+
+## 랭킹 모드 (ranking modes)
+최종 정렬 방식은 선택 가능합니다. **업스트림 신호(매칭/검증/fit/BT/listwise/pairwise)는 모드와 무관하게 동일**하고,
+**최종 순서만** 달라집니다. 모든 모드에서 mismatch(marketing/design/product) 역할은 비-mismatch 위로 올라갈 수 없습니다.
+
+- **`domain_fit_bt`** — **기본값, 권장 제품 정렬.** 도메인 우선순위 가드 → 도메인 tier(strong>adjacent>weak>mismatch)
+  → fit_level 내림차순 → BT 점수 → listwise 순위 → 결정적 fallback. 주력 도메인 역할을 항상 위에 두면서,
+  **같은 tier 안에서는 fit이 높은 공고가 위**로 와 순위와 fit 숫자가 일치합니다. BT/pairwise 는 같은 tier·같은 fit 의
+  타이브레이커로 계속 사용됩니다. (특정 도메인을 강제하지 않으며, 각 후보의 도메인 프로파일을 따릅니다.)
+- **`bt_primary`** — pairwise/BT 중심의 연구·디버그용 정렬(v0 원래 기본값). BT가 1차 키, fit/도메인은 동점 타이브레이커.
+- **`fit_primary`** — 순수 fit 레벨 정렬("fit 기준 정렬" UI 옵션으로 유용). fit이 1차 키지만, adjacent 역할이
+  strong 주력 도메인 역할 위로 올라갈 수 있어 기본값으로는 권장하지 않습니다.
+
+3개 모드의 ablation 비교 근거는 `docs/EVAL_SUITE.md` 와 `outputs/eval/ranking_mode_comparison.md` 참고.
+`eval-resumes` 에서 `--ranking-mode <mode>` 로 선택하거나 `--compare-ranking-modes` 로 세 모드를 한 번에 비교할 수 있습니다.
 
 ## 요구 사항
 - Python 3.10+ (3.11+ 권장)

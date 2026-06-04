@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 from rich.console import Console
@@ -20,6 +21,7 @@ from . import (
     cache,
     compare_pairwise,
     config,
+    eval_resumes,
     fetch_jobs,
     llm,
     matching,
@@ -241,8 +243,21 @@ def _parse_all_jobs(raw_jobs: List[dict]) -> Tuple[List[JobPosting], List[str]]:
     return jobs, warnings
 
 
+def _ranking_payload(fit_results, guard_moves, bt, primary, secondary, mode) -> dict:
+    """Minimal ranking-only JSON for an alternate ranking mode (ablation artifact)."""
+    return {
+        "ranking_mode": mode,
+        "note": "fit_level/bt_score represent FIT 적합도 only, NOT pass probability. No percentages.",
+        "user_profile": {"primary_domains": primary, "secondary_domains": secondary},
+        "domain_priority_guard_moves": guard_moves,
+        "bradley_terry_scores": bt,
+        "ranking": [r.model_dump() for r in fit_results],
+    }
+
+
 def _pipeline_rank(raw_jobs: List[dict], resume_text: str,
-                   fetch_failures: List[str], manual_used: bool) -> bool:
+                   fetch_failures: List[str], manual_used: bool,
+                   ranking_mode: str = "domain_fit_bt", compare_modes=None) -> bool:
     if not raw_jobs:
         console.print("[yellow]사용할 JD가 없습니다.[/] 먼저 `python -m src.main fetch-jobs` 를 실행하거나 "
                       f"`{config.JOBS_MANUAL_PATH}` 를 채우세요.")
@@ -323,11 +338,12 @@ def _pipeline_rank(raw_jobs: List[dict], resume_text: str,
         console.print(f"   [yellow]강 도메인 구제 포함: {pairwise_info['rescued_strong_domain']}[/]")
     pairwise = compare_pairwise.run_pairwise(tables, candidates, domain_ctx)
 
-    # Stage 9+10: aggregate + fit levels
-    console.print("[bold]7) Bradley-Terry 집계 + 적합도(1~5) 산출[/]")
+    # Stage 9+10: aggregate + fit levels (primary ranking_mode → full report)
+    console.print(f"[bold]7) Bradley-Terry 집계 + 적합도(1~5) 산출[/] [dim](ranking_mode={ranking_mode})[/]")
     jobs_by_id = {j.job_id: j for j in jobs}
     fit_results, bt, guard_moves = rank_aggregate.aggregate(
-        jobs_by_id, tables_by_id, listwise, pairwise, candidates, fits, domain_ctx)
+        jobs_by_id, tables_by_id, listwise, pairwise, candidates, fits, domain_ctx,
+        ranking_mode=ranking_mode)
     if guard_moves:
         console.print(f"   [yellow]domain-priority guard moved: "
                       f"{[(m['job_id'], m['old_rank'], '→', m['new_rank']) for m in guard_moves]}[/]")
@@ -339,6 +355,19 @@ def _pipeline_rank(raw_jobs: List[dict], resume_text: str,
                          secondary_domains=resume.secondary_domains,
                          skills_debug=sk_dbg, pairwise_info=pairwise_info,
                          guard_moves=guard_moves)
+
+    # Ranking-mode ablation: recompute the order under each requested mode (deterministic re-sort
+    # over the SAME upstream signals — no extra LLM) and save a ranking-only artifact per mode.
+    for m in (compare_modes or []):
+        if m == ranking_mode:
+            res_m, bt_m, guard_m = fit_results, bt, guard_moves
+        else:
+            res_m, bt_m, guard_m = rank_aggregate.aggregate(
+                jobs_by_id, tables_by_id, listwise, pairwise, candidates, fits, domain_ctx,
+                ranking_mode=m)
+        _save(f"final_ranking_{m}.json",
+              _ranking_payload(res_m, guard_m, bt_m, resume.primary_domains,
+                               resume.secondary_domains, m))
 
     _print_final(fit_results)
     _print_cache_log()
@@ -573,6 +602,265 @@ def cmd_regression(args) -> bool:
     return _check_invariants()
 
 
+# --------------------------------------------------------------------------- eval-resumes
+def _eval_paths(args):
+    resume_dir = Path(getattr(args, "resume_dir", None) or (config.DATA_DIR / "eval" / "resumes"))
+    expected = Path(getattr(args, "expected", None) or (config.DATA_DIR / "eval" / "expected_behavior.json"))
+    return resume_dir, expected
+
+
+def _load_eval_artifacts(out_dir: Path, selection: dict, fetch_failures: List[str]) -> dict:
+    """Read back the artifacts the pipeline wrote into a persona's output dir."""
+    def rj(name, default):
+        p = out_dir / name
+        if not p.exists():
+            return default
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            return default
+    return {
+        "ranking": rj("final_ranking.json", {}).get("ranking", []),
+        "tables": rj("matching_tables.json", {}),
+        "pairwise": rj("pairwise_comparisons.json", {}),
+        "resume_parsed": rj("resume_parsed.json", {}),
+        "listwise": rj("listwise.json", {}),
+        "selection": selection,
+        "fetch_failures": fetch_failures,
+    }
+
+
+def _eval_one_persona(p: dict, args, shared_jobs, ranking_mode="domain_fit_bt", compare_modes=None) -> dict:
+    """Run the full pipeline for one persona with per-persona domain config and output dir.
+    Returns the diagnose() summary (or error_summary on failure). Restores nothing — the caller
+    saves/restores config globals around the whole loop."""
+    slug, path, entry = p["slug"], p["path"], p["entry"]
+    console.rule(f"[bold]· persona: {slug}")
+    resume_text = path.read_text(encoding="utf-8")
+
+    # Per-persona domain profile drives BOTH domain-aware JD selection (tiers) AND the
+    # domain_alignment fit cap. This is input plumbing — the ranking algorithm is unchanged.
+    config.USER_PRIMARY_DOMAINS = [d.lower() for d in entry.get("primary_domains", [])]
+    config.USER_SECONDARY_DOMAINS = [d.lower() for d in entry.get("secondary_domains", [])]
+    out_dir = config.OUTPUTS_DIR / "eval" / slug
+    out_dir.mkdir(parents=True, exist_ok=True)
+    config.LATEST_DIR = out_dir  # redirect all pipeline outputs here
+    console.print(f"   primary={config.USER_PRIMARY_DOMAINS} · secondary={config.USER_SECONDARY_DOMAINS} → {out_dir}")
+    cache.reset_stats()  # per-persona cache accounting (so each persona's LLM-call count is attributable)
+
+    selection: dict = {}
+    fetch_failures: List[str] = []
+    try:
+        if shared_jobs is not None:
+            raw_jobs = list(shared_jobs)
+            lim = getattr(args, "limit", None)
+            if lim and lim > 0:
+                raw_jobs = raw_jobs[:lim]
+            manual_used = False
+        else:
+            raw_jobs, fetch_failures, selection = fetch_jobs.fetch_all(_limit(args), _pool(args))
+            report.write_selection_report(selection)  # → out_dir
+            _print_selection(selection)
+            manual_used = False
+            if not raw_jobs:
+                console.print("   [yellow]자동 수집 0건 — 이 페르소나 건너뜀[/]")
+                return eval_resumes.error_summary(slug, entry, "수집된 JD 없음 (라이브 풀 비어있음)")
+        if not _pipeline_rank(raw_jobs, resume_text, fetch_failures, manual_used,
+                              ranking_mode=ranking_mode, compare_modes=compare_modes):
+            return eval_resumes.error_summary(slug, entry, "파이프라인이 랭킹을 생성하지 못함")
+    except llm.LLMError as e:
+        console.print(f"   [red]LLM 오류로 이 페르소나 건너뜀: {e}[/]")
+        return eval_resumes.error_summary(slug, entry, f"LLM error: {e}")
+    except Exception as e:  # noqa: BLE001
+        console.print(f"   [red]오류로 이 페르소나 건너뜀: {type(e).__name__}: {e}[/]")
+        return eval_resumes.error_summary(slug, entry, f"{type(e).__name__}: {e}")
+
+    art = _load_eval_artifacts(out_dir, selection, fetch_failures)
+    summary = eval_resumes.diagnose(slug, entry, art)
+    console.print(f"   [bold]→ {slug}: {summary['label'].upper()}[/]")
+    return summary
+
+
+def _eval_dry_run(personas: List[dict], resume_dir: Path) -> bool:
+    """Cheap checks only — validate files/sections + plan. No LLM calls."""
+    console.print("[bold]Dry-run (no LLM): 파일/섹션 검증 + 계획[/]")
+    t = Table(title="페르소나 계획", show_lines=False)
+    t.add_column("persona"); t.add_column("resume"); t.add_column("primary"); t.add_column("secondary")
+    t.add_column("누락 섹션", justify="left")
+    all_ok = True
+    for p in personas:
+        text = p["path"].read_text(encoding="utf-8")
+        missing = eval_resumes.validate_sections(text)
+        entry = p["entry"]
+        prim = ",".join(entry.get("primary_domains", [])) or "[red]없음[/]"
+        sec = ",".join(entry.get("secondary_domains", [])) or "-"
+        if missing or not entry.get("primary_domains"):
+            all_ok = False
+        t.add_row(p["slug"], p["path"].name, prim, sec,
+                  "[green]없음[/]" if not missing else "[red]" + ", ".join(missing) + "[/]")
+    console.print(t)
+    console.print(f"[dim]출력 예정 경로: {config.OUTPUTS_DIR / 'eval'}/<persona>/ + summary.(md|json)[/]")
+    if all_ok:
+        console.print("[green]✓ dry-run 통과 — 모든 이력서에 필수 섹션이 있고 도메인 설정이 존재합니다.[/]")
+    else:
+        console.print("[red]✗ dry-run 경고 — 누락 섹션 또는 primary_domains 누락이 있습니다(위 표 참조).[/]")
+    return all_ok
+
+
+def cmd_eval_resumes(args) -> bool:
+    console.rule("[bold]Eval resumes — 멀티 페르소나 일반화 진단")
+    config.ensure_dirs()
+    resume_dir, expected_path = _eval_paths(args)
+    only = getattr(args, "only", None)
+
+    try:
+        expected = eval_resumes.load_expected(expected_path)
+    except Exception as e:  # noqa: BLE001
+        console.print(f"[red]expected_behavior 로드 실패:[/] {expected_path} ({e})")
+        return False
+    personas, plan_warnings = eval_resumes.plan_personas(resume_dir, expected, only)
+    for w in plan_warnings:
+        console.print(f"   [yellow]· {w}[/]")
+    if not personas:
+        console.print(f"[red]평가할 페르소나가 없습니다.[/] (resume-dir: {resume_dir})")
+        return False
+    console.print(f"[bold]페르소나 {len(personas)}개:[/] {[p['slug'] for p in personas]}")
+
+    if getattr(args, "dry_run", False):
+        return _eval_dry_run(personas, resume_dir)
+
+    if not _llm_ready():
+        return False
+
+    fixture = getattr(args, "fixture", None)
+    shared_jobs = None
+    if fixture:
+        try:
+            shared_jobs = fetch_jobs.load_fixture(fixture)
+        except Exception as e:  # noqa: BLE001
+            console.print(f"[red]픽스처 로드 실패:[/] {fixture} ({e})")
+            return False
+        console.print(f"[bold]고정 픽스처:[/] {fixture} → {len(shared_jobs)}건 (모든 페르소나 공유)")
+
+    cache.NAMESPACE = "eval"  # isolate eval cache from normal/fixture runs
+    _apply_cache_flags(args)
+
+    compare = bool(getattr(args, "compare_ranking_modes", False))
+    ranking_mode = getattr(args, "ranking_mode", None) or "domain_fit_bt"
+    # In compare mode every mode is saved; the full report/diagnose uses the chosen primary mode.
+    compare_modes = list(rank_aggregate.RANKING_MODES) if compare else None
+    if compare:
+        console.print(f"[bold]랭킹 모드 비교(ablation):[/] {compare_modes} "
+                      f"(primary={ranking_mode}; LLM 1회, 결정적 재정렬만 추가)")
+    elif ranking_mode != "domain_fit_bt":
+        console.print(f"[bold]랭킹 모드:[/] {ranking_mode} (기본값 domain_fit_bt 아님)")
+
+    saved = (config.USER_PRIMARY_DOMAINS, config.USER_SECONDARY_DOMAINS, config.LATEST_DIR)
+    summaries: List[dict] = []
+    try:
+        for p in personas:
+            summaries.append(_eval_one_persona(p, args, shared_jobs, ranking_mode, compare_modes))
+    finally:
+        config.USER_PRIMARY_DOMAINS, config.USER_SECONDARY_DOMAINS, config.LATEST_DIR = saved
+
+    meta = {
+        "mode": "fixture" if fixture else "live-fetch",
+        "fixture": fixture,
+        "pool_size": _pool(args) if not fixture else None,
+        "limit": getattr(args, "limit", None),
+        "cache_namespace": "eval",
+        "personas_run": [s["persona"] for s in summaries],
+    }
+    eval_root = config.OUTPUTS_DIR / "eval"
+    eval_root.mkdir(parents=True, exist_ok=True)
+    (eval_root / "summary.md").write_text(eval_resumes.build_summary_md(summaries, meta), encoding="utf-8")
+    (eval_root / "summary.json").write_text(
+        json.dumps({"meta": meta, "personas": summaries}, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # console overview
+    t = Table(title="멀티-이력서 진단 결과 (방향성)")
+    t.add_column("persona"); t.add_column("결과", justify="center"); t.add_column("JD수", justify="right")
+    t.add_column("expected_top@3"); t.add_column("mismatch<non-mm"); t.add_column("도메인역전")
+    _mark = {"pass": "[green]PASS[/]", "warning": "[yellow]WARN[/]", "fail": "[red]FAIL[/]"}
+    for s in summaries:
+        if s.get("error"):
+            t.add_row(s["persona"], _mark["fail"], "-", "-", "-", f"오류: {s['error'][:24]}")
+            continue
+        et = s.get("expected_top_in_top3")
+        et_s = "n/a" if et is None else ("예" if et else "[yellow]아니오[/]")
+        inv = f"{s['domain_inversion_count']}" if s.get("domain_inversion_occurred") else "없음"
+        t.add_row(s["persona"], _mark.get(s["label"], s["label"]), str(s.get("n_jobs", "-")),
+                  et_s, "예" if s.get("mismatch_below_nonmismatch") else "[red]아니오[/]", inv)
+    console.print(t)
+    console.print(f"\n[green]✓ 진단 요약[/] → {eval_root / 'summary.md'} · {eval_root / 'summary.json'}")
+    console.print(f"   페르소나별 산출물: {eval_root}/<persona>/ (final_ranking.json 등)")
+
+    if compare:
+        _write_mode_comparison(personas, eval_root, meta)
+
+    fails = [s["persona"] for s in summaries if s["label"] == "fail"]
+    if fails:
+        console.print(f"[red]✗ FAIL 페르소나: {fails} — 하드 불변식 위반(상세는 summary.md).[/]")
+    else:
+        warns = [s["persona"] for s in summaries if s["label"] == "warning"]
+        console.print("[green]✓ 하드 불변식 위반 없음[/]" + (f" (경고: {warns})" if warns else ""))
+    return not fails
+
+
+def _read_json(p: Path):
+    try:
+        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _write_mode_comparison(personas: List[dict], eval_root: Path, meta: dict) -> None:
+    """Build outputs/eval/ranking_mode_comparison.{md,json} from each persona's per-mode rankings."""
+    modes = list(rank_aggregate.RANKING_MODES)
+    comparisons: List[dict] = []
+    for p in personas:
+        slug, entry = p["slug"], p["entry"]
+        d = eval_root / slug
+        rankings_by_mode = {}
+        missing = []
+        for m in modes:
+            data = _read_json(d / f"final_ranking_{m}.json")
+            if not data:
+                missing.append(m)
+            else:
+                rankings_by_mode[m] = data.get("ranking", [])
+        if missing:
+            comparisons.append({"persona": slug, "error": f"랭킹 모드 산출물 누락: {missing}"})
+            continue
+        pw = _read_json(d / "pairwise_comparisons.json") or {}
+        disagree = len([c for c in (pw.get("comparisons") or []) if not c.get("agreed", True)])
+        comparisons.append(eval_resumes.compare_persona(slug, entry, rankings_by_mode, disagree, modes))
+
+    (eval_root / "ranking_mode_comparison.json").write_text(
+        json.dumps({"meta": meta, "modes": modes, "personas": comparisons}, ensure_ascii=False, indent=2),
+        encoding="utf-8")
+    (eval_root / "ranking_mode_comparison.md").write_text(
+        eval_resumes.build_comparison_md(comparisons, meta), encoding="utf-8")
+    console.print(f"[green]✓ 랭킹 모드 비교[/] → {eval_root / 'ranking_mode_comparison.md'} · "
+                  f"{eval_root / 'ranking_mode_comparison.json'}")
+
+    t = Table(title=f"랭킹 모드 비교 (역전 수, 모드 순서: {' / '.join(modes)})")
+    t.add_column("persona"); t.add_column("fit-rank 역전", justify="center")
+    t.add_column("tier 역전", justify="center"); t.add_column("mismatch 위반", justify="center")
+    t.add_column("새 misrank 모드", justify="left")
+    for c in comparisons:
+        if c.get("error"):
+            t.add_row(c["persona"], "-", "-", "-", c["error"][:24]); continue
+        met = c["metrics"]
+        fr = " / ".join(str(met[m]["fit_rank_inversions"]) for m in modes)
+        ti = " / ".join(str(met[m]["tier_inversions"]) for m in modes)
+        mv = " / ".join(str(int(met[m]["mismatch_violation"])) for m in modes)
+        nm = [m for m in modes if c["new_misrank"].get(m)]
+        t.add_row(c["persona"], fr, ti, mv,
+                  ("[red]" + ", ".join(nm) + "[/]") if nm else "없음")
+    console.print(t)
+
+
 COMMANDS = {
     "run": cmd_run,
     "fetch-jobs": cmd_fetch_jobs,
@@ -580,6 +868,7 @@ COMMANDS = {
     "rank": cmd_rank,
     "doctor": cmd_doctor,
     "regression": cmd_regression,
+    "eval-resumes": cmd_eval_resumes,
 }
 
 
@@ -605,6 +894,21 @@ def main(argv=None) -> int:
     p_reg = sub.add_parser("regression", help="invariant-based fixture regression check")
     p_reg.add_argument("--fixture", default=None, help="fixture JSON (default data/fixtures/original_3_jds.json)")
     p_reg.add_argument("--refresh-cache", action="store_true", help="ignore cached parses and re-parse")
+    p_eval = sub.add_parser("eval-resumes",
+                            help="run the pipeline across multiple synthetic resumes (generalization diagnostic)")
+    p_eval.add_argument("--resume-dir", default=None, help="dir of persona resume .md files (default data/eval/resumes)")
+    p_eval.add_argument("--expected", default=None, help="expected_behavior.json (default data/eval/expected_behavior.json)")
+    p_eval.add_argument("--pool-size", type=int, default=None, help="candidate pool size per persona (default 50)")
+    p_eval.add_argument("--limit", type=int, default=None, help="max JDs evaluated per persona")
+    p_eval.add_argument("--fixture", default=None, help="use one shared fixed JD set for ALL personas (skips fetching)")
+    p_eval.add_argument("--only", default=None, help="run a single persona by slug (filename stem)")
+    p_eval.add_argument("--ranking-mode", choices=list(rank_aggregate.RANKING_MODES), default="domain_fit_bt",
+                        help="final-order mode for the report (default domain_fit_bt = recommended product order)")
+    p_eval.add_argument("--compare-ranking-modes", action="store_true",
+                        help="compute BOTH ranking modes (one LLM run) and write ranking_mode_comparison.{md,json}")
+    p_eval.add_argument("--dry-run", action="store_true",
+                        help="cheap checks only: validate files/sections + print plan, NO LLM calls")
+    p_eval.add_argument("--refresh-cache", action="store_true", help="ignore cached parses and re-parse")
     args = parser.parse_args(argv)
     try:
         ok = COMMANDS[args.command](args)

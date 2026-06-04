@@ -16,8 +16,8 @@
 7. **Verifier** — conservative; may only lower match levels; understands same-category equivalence and old/student-project evidence.
 8. **Listwise reranking** — with duplicate/omission detection, one stricter re-ask, and fit/domain-aware safe placement.
 9. **Pairwise A/B and B/A comparison** — order-swap cross-check on a bounded candidate set (listwise top-K + fit≥4 + strong-domain rescue; comparison-only, never a forced rank).
-10. **Bradley-Terry aggregation** — pure-python relative fit-strength among compared jobs (NOT a probability). Tie-breakers: fit_level → domain_alignment → listwise rank.
-11. **Domain-priority guard** — a thin, stable final-order partition so a `mismatch`-domain role (marketing/design/product) can never outrank a non-mismatch (engineering) role. BT/pairwise order is preserved **within** each partition; the guard only moves mismatch roles below all non-mismatch roles. Any moved job is logged (`domain_priority_guard_moves`).
+10. **Bradley-Terry aggregation** — pure-python relative fit-strength among compared jobs (NOT a probability).
+11. **Domain-priority guard + ranking mode** — a thin, stable final-order partition so a `mismatch`-domain role (marketing/design/product) can never outrank a non-mismatch (engineering) role. Within the non-mismatch partition the **ranking mode** decides the order. The **default is `domain_fit_bt`** (domain tier strong>adjacent>weak>mismatch → fit_level desc → BT → listwise rank → deterministic), selected via a 3-mode ablation (see `docs/EVAL_SUITE.md`). `bt_primary` (BT-primary, original v0) and `fit_primary` (pure fit-level) remain selectable via `--ranking-mode`. Any moved job is logged (`domain_priority_guard_moves`).
 12. **Invariant regression** (`python -m src.main regression`) — asserts product-level invariants, not exact fit levels. Runs in an **isolated fixture cache namespace** (`outputs/cache/fixture/`) so full `--refresh-cache` runs never drift the golden.
 
 ## What was validated

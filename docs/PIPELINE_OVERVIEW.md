@@ -25,8 +25,16 @@ JD pool fetch
 8. **Listwise reranking** — the model orders the jobs by fit; duplicates/omissions are detected and safely repaired.
 9. **Pairwise verification** — top candidates are compared head-to-head in both A/B and B/A order to cross-check.
 10. **BT aggregation** — Bradley-Terry turns pairwise outcomes into a relative fit-strength order.
-11. **Domain-priority guard** — a final, stable partition so a domain-`mismatch` role (marketing/design/product) can never sit above a non-mismatch engineering role. It does not reorder within either group (BT order is kept); it only pushes mismatch roles below all engineering roles. Moves are logged.
+11. **Domain-priority guard + ranking mode** — a final, stable partition so a domain-`mismatch` role (marketing/design/product) can never sit above a non-mismatch engineering role. Within the non-mismatch partition the order is decided by the **ranking mode** (default **`domain_fit_bt`**: domain tier → fit_level → BT → listwise → deterministic). Moves are logged.
 12. **Report** — Markdown + JSON written to `outputs/latest/`.
+
+## Ranking modes (final-order only)
+Only the final ordering differs between modes; every upstream signal is identical, and the mismatch guard holds in all of them.
+- **`domain_fit_bt`** (default, recommended): domain tier (strong>adjacent>weak>mismatch) → fit_level desc → BT → listwise → deterministic. Primary-domain roles stay on top while fit is monotonic *within* each tier; BT/pairwise remain the same-tier/same-fit tiebreaker.
+- **`bt_primary`**: Bradley-Terry primary, fit/domain only break BT ties. The original v0 order — useful for researching/debugging pairwise behavior.
+- **`fit_primary`**: fit_level primary — most legible by fit, but an adjacent role can outrank a strong primary-domain role; offered as an optional "sort by fit" UI mode, not the default.
+
+See `docs/EVAL_SUITE.md` for the 3-mode ablation that selected `domain_fit_bt`.
 
 ## Important design principles
 - **The LLM does not directly produce a final pass/acceptance probability.** Pass probability is intentionally disabled.

@@ -1,0 +1,55 @@
+{
+  "_about": "Machine-readable expectations for the multi-resume diagnostic eval suite. All resumes are SYNTHETIC. These are coarse product-level expectations, NOT a pass/fail accuracy benchmark. 'primary_domains'/'secondary_domains' are the domain tokens fed to the existing ranking algorithm per persona (they drive domain-aware JD selection AND the domain_alignment fit cap); the *_role_families fields are used only to label eval results. See docs/EVAL_SUITE.md.",
+  "_domain_note": "domain_alignment maps a JD role_family to domain tokens via ROLE_FAMILY_TO_DOMAINS, then compares against primary/secondary. Because 'fullstack' expands to {fullstack, frontend, backend, web}, a fullstack JD can resolve to 'strong' (not 'adjacent') whenever the persona's primary domain is frontend or backend. That is acceptable: the eval treats strong and adjacent both as non-mismatch.",
+  "_mismatch_families": ["marketing", "design", "product"],
+  "personas": {
+    "backend_platform": {
+      "resume_path": "data/eval/resumes/backend_platform.md",
+      "primary_domains": ["backend"],
+      "secondary_domains": ["fullstack", "devops", "cloud", "infra"],
+      "primary_role_families": ["backend"],
+      "adjacent_role_families": ["fullstack", "devops_infra"],
+      "weak_role_families": ["frontend", "ml_ai", "data", "security", "android", "ios"],
+      "mismatch_role_families": ["marketing", "design", "product"],
+      "expected_top_role_families": ["backend", "fullstack", "devops_infra"],
+      "must_not_rank_above_non_mismatch": ["marketing", "design", "product"],
+      "notes": "Backend/server/platform roles should rank above frontend-only and AI/security roles. A fullstack JD may resolve to strong (it subsumes backend). ML/data/frontend should be weak; marketing/design/product must rank last."
+    },
+    "junior_frontend": {
+      "resume_path": "data/eval/resumes/junior_frontend.md",
+      "primary_domains": ["frontend", "web"],
+      "secondary_domains": ["fullstack"],
+      "primary_role_families": ["frontend"],
+      "adjacent_role_families": ["fullstack"],
+      "weak_role_families": ["backend", "devops_infra", "android", "ios", "ml_ai", "data", "security"],
+      "mismatch_role_families": ["marketing", "design", "product"],
+      "expected_top_role_families": ["frontend", "fullstack"],
+      "must_not_rank_above_non_mismatch": ["marketing", "design", "product"],
+      "notes": "Junior/new-grad frontend. Frontend (and frontend-heavy fullstack) should rank top. Senior frontend roles requiring 3-5y stay frontend-domain (strong) but should earn a LOWER fit_level due to experience_level prerequisite gaps — this tests experience capping, not domain. Backend/infra/android weak; marketing/design/product last."
+    },
+    "ai_ml_application": {
+      "resume_path": "data/eval/resumes/ai_ml_application.md",
+      "primary_domains": ["ml_ai", "ai"],
+      "secondary_domains": ["data", "backend"],
+      "primary_role_families": ["ml_ai"],
+      "adjacent_role_families": ["data", "backend"],
+      "weak_role_families": ["frontend", "android", "ios", "security", "devops_infra"],
+      "mismatch_role_families": ["marketing", "design", "product"],
+      "expected_top_role_families": ["ml_ai", "data", "backend"],
+      "must_not_rank_above_non_mismatch": ["marketing", "design", "product"],
+      "notes": "AI/ML application engineer. AI/ML/LLM/RAG roles should rank top; data and backend-AI-platform adjacent. Frontend/android/security weak; marketing/design/product last. Note: live JD pools may contain few ml_ai roles — invariants that need an ml_ai JD are reported 'n/a' if none was selected."
+    },
+    "devops_infra_security": {
+      "resume_path": "data/eval/resumes/devops_infra_security.md",
+      "primary_domains": ["devops", "cloud", "infra"],
+      "secondary_domains": ["security", "backend"],
+      "primary_role_families": ["devops_infra"],
+      "adjacent_role_families": ["security", "backend"],
+      "weak_role_families": ["frontend", "ml_ai", "data", "android", "ios"],
+      "mismatch_role_families": ["marketing", "design", "product"],
+      "expected_top_role_families": ["devops_infra", "security", "backend"],
+      "must_not_rank_above_non_mismatch": ["marketing", "design", "product"],
+      "notes": "DevOps/infra/platform with security-adjacent exposure. Infra/SRE/AIOps/cloud roles should rank top; security detection/response and backend platform adjacent. Frontend/ml/data weak; marketing/design/product last."
+    }
+  }
+}

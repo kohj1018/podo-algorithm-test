@@ -269,6 +269,9 @@ def compute_fit(table: MatchingTable, alignment: str = "weak") -> dict:
 
 
 # --------------------------------------------------------------------------- final assembly
+RANKING_MODES = ("bt_primary", "fit_primary", "domain_fit_bt")
+
+
 def aggregate(
     jobs_by_id: Dict[str, JobPosting],
     tables_by_id: Dict[str, MatchingTable],
@@ -277,9 +280,28 @@ def aggregate(
     candidate_ids: List[str],
     fits: Dict[str, dict],
     domain_ctx: Dict[str, dict],
+    ranking_mode: str = "domain_fit_bt",
 ) -> Tuple[List[FitResult], Dict[str, float], list]:
     """candidate_ids = the jobs that received pairwise comparison (Bradley-Terry set).
-    fits = precomputed compute_fit() per job_id (shared with selection/listwise)."""
+    fits = precomputed compute_fit() per job_id (shared with selection/listwise).
+
+    ranking_mode selects how the final order is computed WITHIN each domain-priority partition
+    (the mismatch-below-non-mismatch guard is applied in ALL modes):
+      - "domain_fit_bt" (DEFAULT, recommended product order): domain tier (strong>adjacent>weak>
+        mismatch) first, then fit_level (desc), then BT score, then listwise rank, then job_id.
+        Keeps primary-domain roles above adjacent/weak ones (domain-first browsing) while making
+        fit monotonic WITHIN each tier; BT only orders ties at the same tier+fit. Not
+        frontend-specific — the tier comes from each candidate's own domain profile.
+      - "bt_primary" (pairwise/BT-heavy research/debug order): Bradley-Terry is the primary key;
+        fit_level/domain only break exact BT ties. Pairwise-compared jobs first, then the
+        uncompared tail. This was the original v0 default.
+      - "fit_primary" (pure fit-level order, useful as a "sort by fit" UI option): fit_level (desc)
+        is the primary key, then domain_alignment strength, then BT, then listwise rank, then
+        job_id. Most legible by fit, but an adjacent role CAN outrank a strong primary-domain role.
+    Only the FINAL ORDER differs between modes; all upstream signals (matching, verify, fits, BT,
+    listwise, pairwise) are identical. BT scores are kept in the report under every mode."""
+    if ranking_mode not in RANKING_MODES:
+        ranking_mode = "domain_fit_bt"
     ordered_ids = [r["job_id"] for r in listwise["ranking"]]
     top_ids = [jid for jid in candidate_ids if jid in tables_by_id]
 
@@ -294,14 +316,28 @@ def aggregate(
     def domrank(jid):
         return DOM_RANK.get(domain_ctx.get(jid, {}).get("domain_alignment", "weak"), 1)
 
-    # Pairwise candidates: Bradley-Terry is the PRIMARY key — clear pairwise winners are preserved.
-    # fit_level / domain only break exact BT ties (BT rounded so 1.6475==1.6475 ties).
-    top_sorted = sorted(
-        top_ids, key=lambda x: (-round(bt.get(x, 0.0), 6), -fitlvl(x), -domrank(x), lw_index.get(x, 999), x))
-    # Tail (not pairwise-compared): order by fit_level, then domain, then listwise position.
-    rest = [jid for jid in ordered_ids if jid not in set(top_ids)]
-    rest_sorted = sorted(rest, key=lambda x: (-fitlvl(x), -domrank(x), lw_index[x], x))
-    pre_guard_order = top_sorted + rest_sorted
+    if ranking_mode in ("fit_primary", "domain_fit_bt"):
+        # Single pass over all jobs (compared or not). BT (0 for uncompared) only orders within an
+        # equal-(fit[,tier]) band. Mismatch (domrank 0) sorts last in both, so the guard is a no-op.
+        all_ids = [jid for jid in ordered_ids if jid in tables_by_id]
+        for jid in top_ids:  # safety: ensure every compared job is included exactly once
+            if jid not in all_ids:
+                all_ids.append(jid)
+        if ranking_mode == "domain_fit_bt":
+            # domain tier → fit_level → BT → listwise rank → deterministic
+            key = lambda x: (-domrank(x), -fitlvl(x), -round(bt.get(x, 0.0), 6), lw_index.get(x, 999), x)
+        else:  # fit_primary: fit_level → domain strength → BT → listwise rank → deterministic
+            key = lambda x: (-fitlvl(x), -domrank(x), -round(bt.get(x, 0.0), 6), lw_index.get(x, 999), x)
+        pre_guard_order = sorted(all_ids, key=key)
+    else:
+        # bt_primary (research/debug mode): Bradley-Terry is the PRIMARY key — clear pairwise winners
+        # are preserved. fit_level / domain only break exact BT ties (BT rounded so 1.6475==1.6475).
+        top_sorted = sorted(
+            top_ids, key=lambda x: (-round(bt.get(x, 0.0), 6), -fitlvl(x), -domrank(x), lw_index.get(x, 999), x))
+        # Tail (not pairwise-compared): order by fit_level, then domain, then listwise position.
+        rest = [jid for jid in ordered_ids if jid not in set(top_ids)]
+        rest_sorted = sorted(rest, key=lambda x: (-fitlvl(x), -domrank(x), lw_index[x], x))
+        pre_guard_order = top_sorted + rest_sorted
 
     # Domain-priority guard: a `mismatch`-domain role (marketing/design/product) must never
     # outrank a non-mismatch (engineering) role. Stable partition — BT/pairwise order is preserved
