@@ -15,8 +15,29 @@
 > - 2 = 낮음: 아쉬움
 > - 1 = 매우 낮음: 비추천
 
+> **이 레포를 당신의 서비스로 이식하려면 → [`docs/PORTING_GUIDE.md`](docs/PORTING_GUIDE.md) 부터 읽으세요.**
+> (무엇이 핵심 IP라 그대로 옮길지 / 무엇은 개념만 옮겨 재구현할지 / 무엇은 버릴 스캐폴딩인지 모듈 단위 정리.)
+
 ## Validated prototype status
-**상태: 알고리즘 검증 완료 (prototype v0, 2026-06-04, OpenAI / GPT-5.4 mini).** 자세한 내용은 `docs/ALGORITHM_VALIDATION.md`, `docs/PIPELINE_OVERVIEW.md`, `docs/NEXT_STEPS.md` 참고.
+**상태: 알고리즘 검증 완료 + 정확도 평가 도입 (2026-06-04, OpenAI / GPT-5.4 mini).**
+- **검증(v0):** 단일 실 이력서로 파이프라인 end-to-end 검증.
+- **일반화 + 기본 모드:** 4개 합성 페르소나 진단 + 3-모드 ablation → 기본 정렬 `domain_fit_bt` 채택.
+- **정확도(최신):** 사람이 라벨링한 **골든 페어 20쌍** 기준 — `domain_fit_bt` **16/20**, `bt_primary` 15/20,
+  `fit_primary` 12/20. (실험 스코어링 모드 `dedup_required_preferred`로는 19/20, 회귀 0 — 단 표본 편중으로 **기본값
+  미승격, 실험 유지**. → `docs/SCORING_IMPROVEMENT_PROPOSAL.md`)
+- 정확도 %는 *평가 내부 지표*(시스템 vs 사람 라벨 일치율)이며 제품 fit/합격확률이 아닙니다.
+
+### 문서 지도 (Doc map)
+| 문서 | 내용 |
+|---|---|
+| [`docs/PORTING_GUIDE.md`](docs/PORTING_GUIDE.md) | **다른 서비스로 이식하는 법** (모듈별 옮김/재구현/버림, 데이터 계약, 아키텍처 매핑) |
+| [`STATUS_REPORT.md`](STATUS_REPORT.md) | 전체 현황·과정·실험 결과 종합(특히 `986dd24` 이후) |
+| [`docs/PIPELINE_OVERVIEW.md`](docs/PIPELINE_OVERVIEW.md) | 파이프라인 단계 상세 |
+| [`docs/ALGORITHM_VALIDATION.md`](docs/ALGORITHM_VALIDATION.md) | v0 알고리즘 검증 근거 |
+| [`docs/EVAL_SUITE.md`](docs/EVAL_SUITE.md) | 멀티-페르소나 진단 + 3-모드 ablation |
+| [`docs/GOLDEN_PAIR_EVAL.md`](docs/GOLDEN_PAIR_EVAL.md) | 골든 페어(사람 라벨) 정확도 평가 방법론 |
+| [`docs/SCORING_IMPROVEMENT_PROPOSAL.md`](docs/SCORING_IMPROVEMENT_PROPOSAL.md) | 스코어링 개선안(A~D) + dedup ablation 결과·승격 기준 |
+| [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md) | 다음 단계 |
 
 **회귀(불변식) 검사 실행:**
 ```bash
@@ -113,6 +134,12 @@ python -m src.main rank            # 이미 수집된 공고로 랭킹만 수행
 python -m src.main run             # 전체 (수집 → 랭킹 → 리포트)
 python -m src.main regression      # 픽스처 불변식(invariant) 회귀 검사
 
+# 평가 (LLM 키 필요: eval-resumes / 불필요: propose·eval-golden-pairs는 캐시 산출물만 읽음)
+python -m src.main eval-resumes --pool-size 50 --limit 6 [--compare-ranking-modes]   # 멀티-페르소나 진단
+python -m src.main propose-golden-pairs --from outputs/eval --max-pairs 50            # 골든 페어 후보 추출(라벨 안 함)
+python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/golden_pairs_20.json                                 # 정확도(기본=baseline)
+python -m src.main eval-golden-pairs --pairs data/eval/golden_pairs/golden_pairs_20.json --scoring-mode dedup_required_preferred   # 실험 스코어링 ablation
+
 # 도메인 인지 선택: 큰 후보 풀에서 사용자 도메인 기준으로 균형 선택
 python -m src.main run --limit 10 --pool-size 50 --refresh-cache
 python -m src.main fetch-jobs --pool-size 50 --selection-report   # LLM 없이 선택 미리보기
@@ -182,11 +209,22 @@ python -m src.main run --fixture data/fixtures/original_3_jds.json --refresh-cac
 ```
 .
 ├── README.md / .env.example / requirements.txt
-├── data/  (resume.md, jobs_manual.md, raw/jobs/)
-├── outputs/latest/
-├── prompts/  (각 LLM 단계 프롬프트 .md)
-└── src/  (config, llm, fetch_jobs, parse_resume, parse_job, matching,
+├── STATUS_REPORT.md                  # 전체 현황 종합 보고서
+├── data/
+│   ├── resume.md (PII, gitignore) / jobs_manual.md / raw/jobs/ (gitignore)
+│   ├── fixtures/                     # 회귀 픽스처 (original_3_jds.json)
+│   └── eval/                         # 평가용 (모두 합성/공개 데이터)
+│       ├── resumes/ · personas.md · expected_behavior.json   # 멀티-페르소나 진단
+│       └── golden_pairs/             # 골든 페어 정확도 평가(라벨/후보/검증 세트)
+├── outputs/                          # 생성물 (gitignore: latest/ cache/ eval/)
+├── prompts/  (resume_extract, jd_extract, requirement_evidence_match,
+│              rematch_evidence, match_verifier, listwise_rerank, pairwise_compare)
+├── docs/     (PORTING_GUIDE, PIPELINE_OVERVIEW, ALGORITHM_VALIDATION, EVAL_SUITE,
+│              GOLDEN_PAIR_EVAL, SCORING_IMPROVEMENT_PROPOSAL, NEXT_STEPS)
+└── src/  (config, llm, cache, fetch_jobs, parse_resume, parse_job, matching,
            verify_matches, rerank_listwise, compare_pairwise, rank_aggregate,
-           report, main, models)
+           report, main, models, eval_resumes, golden_pairs)
 ```
-> 참고: 공유 Pydantic 스키마는 `src/models.py` 에 모았습니다(순환 import 방지). 그 외 모듈 구성은 요청 사양과 동일합니다.
+> 참고: 공유 Pydantic 스키마는 `src/models.py` 에 모았습니다(순환 import 방지). 평가 모듈(`eval_resumes`,
+> `golden_pairs`)은 `main` 을 import 하지 않는 순수 함수라 import 사이클이 없습니다. 이식 시 모듈별 우선순위는
+> [`docs/PORTING_GUIDE.md`](docs/PORTING_GUIDE.md) §3 표를 참고하세요.
